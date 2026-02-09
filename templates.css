@@ -1,0 +1,32 @@
+/* TEMPLATE-SPECIFIC STYLES */
+        .template-quote-hero .h-main { font-size: 5rem; text-align: center; line-height: 1.2; font-style: italic; }
+        .template-quote-hero .h-context { display: none; }
+        .template-quote-hero .body-p { text-align: center; font-size: 1.2rem; margin-top: 30px; }
+       
+        .template-minimal .h-context { display: none; }
+        .template-minimal .divider, .template-minimal .kk-dual-sep { display: none !important; }
+       
+        .template-image-focus .body-p { font-size: 1.5rem; }
+        .template-image-focus .bridge-visual { flex: 1.5; }
+       
+        .template-stats-grid .body-p { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; font-size: 1.5rem; }
+       
+        .template-big-number .h-main { font-size: 8rem; text-align: center; font-weight: 900; }
+        .template-big-number .h-context { text-align: center; font-size: 2.5rem; }
+        .template-big-number .body-p { text-align: center; font-size: 1.8rem; margin-top: 40px; }
+       
+        .template-timeline .body-p { position: relative; padding-left: 60px; }
+        .template-timeline .body-p::before { content: ""; position: absolute; left: 20px; top: 0; bottom: 0; width: 4px; background: var(--line-color); }
+       
+        .template-split-screen .middle-content-area { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+       
+        .template-full-bleed .export-card { padding: 0 !important; }
+        .template-full-bleed .middle-content-area { padding: 80px; }
+       
+        .template-centered-minimal { text-align: center; }
+        .template-centered-minimal .h-main, .template-centered-minimal .h-context, .template-centered-minimal .body-p { text-align: center; }
+        .template-centered-minimal .cta-box { border-left: none; border-top: 4px solid var(--line-color); text-align: center; }
+       
+        .template-editorial .h-main { font-size: 3.5rem; line-height: 1.3; }
+        .template-editorial .h-context { font-size: 1.5rem; font-style: normal; text-transform: uppercase; letter-spacing: 3px; }
+        .template-editorial .body-p { column-count: 2; column-gap: 40px; font-size: 1.6rem; }
