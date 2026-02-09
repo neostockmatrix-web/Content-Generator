@@ -451,7 +451,7 @@
                 <option value="verdict_demo">Verdict: Old vs KalpaKuber</option>
             </select>
         </div>
-        <button class="p-btn" style="background:#2563eb; color:white; grid-column: span 1;" onclick="exportAllPDF()">Download Full Deck (PDF)</button>
+        <button class="p-btn" style="background:#2563eb; color:white; grid-column: span 1;" onclick="exportAllPDF(this)">Download Full Deck (PDF)</button>
         <button class="p-btn" style="background:#c5a059; color:black; grid-column: span 1;" onclick="harmonizeColors()">Harmonize Colors</button>
         <div class="control-sep">🚀 MODULAR LAYOUT & SAFE ZONES</div>
         <div class="input-group">
@@ -671,7 +671,7 @@
         <div id="slideConfigs"></div>
        
         <button class="sync-btn" onclick="render()">Build Evolution</button>
-        <button class="sync-btn" onclick="exportAll()" style="background:#2563eb; color:white; margin-top:5px;">Download All PNGs</button>
+        <button class="sync-btn" onclick="exportAll(this)" style="background:#2563eb; color:white; margin-top:5px;">Download All PNGs</button>
     </div>
 </div>
 <div id="stage" class="stage"></div>
@@ -1475,12 +1475,81 @@
         }
     }
 
+    async function waitForImages(element) {
+        const images = Array.from(element.querySelectorAll('img'));
+        if (images.length === 0) return;
+        await Promise.all(images.map((img) => {
+            if (img.complete && img.naturalWidth !== 0) return Promise.resolve();
+            if (img.decode) {
+                return img.decode().catch(() => undefined);
+            }
+            return new Promise((resolve) => {
+                img.addEventListener('load', resolve, { once: true });
+                img.addEventListener('error', resolve, { once: true });
+            });
+        }));
+    }
+
+    async function waitForFonts() {
+        if (document.fonts && document.fonts.ready) {
+            try {
+                await document.fonts.ready;
+            } catch (err) {
+                console.warn('Font readiness check failed:', err);
+            }
+        }
+    }
+
+    async function waitForNextFrame() {
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    }
+
+    async function prepareForCapture(el) {
+        await waitForFonts();
+        await waitForImages(el);
+        await waitForNextFrame();
+    }
+
+    let previewTimer = null;
+    let isExporting = false;
+
+    function pausePreview() {
+        if (previewTimer) {
+            clearInterval(previewTimer);
+            previewTimer = null;
+        }
+    }
+
+    function resumePreview() {
+        if (!previewTimer) {
+            previewTimer = setInterval(() => {
+                const slider = document.getElementById('phone-slider');
+                if(slider) {
+                    previewIdx = (previewIdx + 1) % 5;
+                    slider.style.transform = `translateX(-${previewIdx * 20}%)`;
+                }
+            }, 3800);
+        }
+    }
+
+    async function startExport() {
+        if (isExporting) return false;
+        isExporting = true;
+        pausePreview();
+        return true;
+    }
+
+    function finishExport() {
+        isExporting = false;
+        resumePreview();
+    }
+
     async function exportCard(id) {
         try {
+            if (!(await startExport())) return;
             const el = document.getElementById(id);
             if(!el) throw new Error('Card element not found');
-            // Give layout time to settle
-            await new Promise(r => setTimeout(r, 400));
+            await prepareForCapture(el);
             const canvas = await html2canvas(el, {
                 scale: 3,
                 useCORS: true,
@@ -1518,22 +1587,27 @@
         } catch (err) {
             console.error('Export error:', err);
             alert("Export failed: " + err.message);
+        } finally {
+            finishExport();
         }
     }
 
-    async function exportAllPDF() {
+    async function exportAllPDF(btn) {
         try {
+            if (!(await startExport())) return;
             const { jsPDF } = window.jspdf;
             if(!jsPDF) throw new Error('jsPDF library not loaded');
             const pdf = new jsPDF('p', 'pt', [1080, 1350]);
-            const btn = event.target;
-            const originalText = btn.innerText;
-            btn.innerText = "PREPARING PDF...";
+            const buttonEl = btn || document.activeElement;
+            const originalText = buttonEl ? buttonEl.innerText : '';
+            if (buttonEl) buttonEl.innerText = "PREPARING PDF...";
            
-            await new Promise(r => setTimeout(r, 500));
+            await waitForNextFrame();
            
             for (let i = 1; i <= 5; i++) {
                 const el = document.getElementById(`card-${i}`);
+                if (!el) continue;
+                await prepareForCapture(el);
                 const canvas = await html2canvas(el, {
                     scale: 2,
                     useCORS: true,
@@ -1545,29 +1619,34 @@
                 pdf.addImage(imgData, 'JPEG', 0, 0, 1080, 1350);
             }
             pdf.save("KalpaKuber_Deck.pdf");
-            btn.innerText = originalText;
+            if (buttonEl) buttonEl.innerText = originalText;
         } catch(e) {
             console.error('PDF export error:', e);
             alert('PDF export failed: ' + e.message);
+        } finally {
+            finishExport();
         }
     }
 
-    async function exportAll() {
+    async function exportAll(btn) {
         try {
-            const btn = event.target;
-            const originalText = btn.innerText;
-            btn.innerText = "EXPORTING...";
+            if (!(await startExport())) return;
+            const buttonEl = btn || document.activeElement;
+            const originalText = buttonEl ? buttonEl.innerText : '';
+            if (buttonEl) buttonEl.innerText = "EXPORTING...";
            
             for(let i=1; i<=5; i++) {
-                btn.innerText = `EXPORTING ${i}/5...`;
+                if (buttonEl) buttonEl.innerText = `EXPORTING ${i}/5...`;
                 await exportCard(`card-${i}`);
                 await new Promise(r => setTimeout(r, 3000));
             }
            
-            btn.innerText = originalText;
+            if (buttonEl) buttonEl.innerText = originalText;
         } catch(e) {
             console.error('Batch export error:', e);
             alert('Batch export failed: ' + e.message);
+        } finally {
+            finishExport();
         }
     }
    
@@ -1576,13 +1655,7 @@
     saveState(); // initial state saved
 
     let previewIdx = 0;
-    setInterval(() => {
-        const slider = document.getElementById('phone-slider');
-        if(slider) {
-            previewIdx = (previewIdx + 1) % 5;
-            slider.style.transform = `translateX(-${previewIdx * 20}%)`;
-        }
-    }, 3800);
+    resumePreview();
 </script>
 </body>
 </html>
