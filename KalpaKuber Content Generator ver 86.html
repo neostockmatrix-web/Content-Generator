@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KalpaKuber v48.6 | Complete 10 Templates + All Features</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+   
+    <style>
+        :root {
+            --gold: #c5a059; --obsidian: #021F2D;
+            --sub-color: #c5a059;
+            --shock-bg: #c5a059;
+            --shock-txt: #000000;
+            --cta-bg: rgba(197, 160, 89, 0.1);
+            --cta-txt: #ffffff;
+            --brand-color: #c5a059;
+            --trust-color: #c5a059;
+            --text-align: left;
+            --h-font: 'Georgia', 'Times New Roman', serif; --h-color: #c5a059; --h-size: 4.2rem;
+            --s-font: 'Palatino', 'Book Antiqua', serif; --s-color: #c5a059; --s-size: 1.8rem;
+            --b-font: 'Segoe UI', 'Helvetica', sans-serif; --b-color: #ffffff; --b-size: 2rem; --b-lh: 1.4;
+            --v-gap: 20px;
+            --line-color: #c5a059;
+            --line-color-2: #c5a059;
+            --line-weight: 1px; --line-display: block;
+            --border-width-main: 30px;
+            --cta-font: 'Arial', sans-serif; --cta-size: 1.1rem;
+            --brand-font: 'Georgia', serif; --brand-size: 0.8rem; --brand-ls: 6px;
+            --card-w: 1080px; --card-h: 1350px;
+            --bg-color-opacity: 1.0;
+            --watermark-opacity: 0.07;
+            --gap-h-s: 10px;
+            --gap-s-b: 20px;
+            --cta-opacity: 1;
+            --cta-blur: 0px;
+            --logo-scale: 1.0;
+            --h-top-margin: 0px;
+            --h-bottom-margin: 0px;
+            --corner-color: #ffffff;
+            --corner-weight: 6px;
+            --side-line-color: #c5a059;
+            --side-line-width: 2px;
+            --horiz-line-color: #c5a059;
+            --horiz-line-height: 2px;
+            --sep-color-1: #c5a059;
+            --sep-color-2: #ffffff;
+            --sep-width: 100%;
+            --sep-thickness: 4px;
+            --sep-margin: 15px;
+        }
+        /* TEMPLATE-SPECIFIC STYLES */
+        .template-quote-hero .h-main { font-size: 5rem; text-align: center; line-height: 1.2; font-style: italic; }
+        .template-quote-hero .h-context { display: none; }
+        .template-quote-hero .body-p { text-align: center; font-size: 1.2rem; margin-top: 30px; }
+       
+        .template-minimal .h-context { display: none; }
+        .template-minimal .divider, .template-minimal .kk-dual-sep { display: none !important; }
+       
+        .template-image-focus .body-p { font-size: 1.5rem; }
+        .template-image-focus .bridge-visual { flex: 1.5; }
+       
+        .template-stats-grid .body-p { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; font-size: 1.5rem; }
+       
+        .template-big-number .h-main { font-size: 8rem; text-align: center; font-weight: 900; }
+        .template-big-number .h-context { text-align: center; font-size: 2.5rem; }
+        .template-big-number .body-p { text-align: center; font-size: 1.8rem; margin-top: 40px; }
+       
+        .template-timeline .body-p { position: relative; padding-left: 60px; }
+        .template-timeline .body-p::before { content: ""; position: absolute; left: 20px; top: 0; bottom: 0; width: 4px; background: var(--line-color); }
+       
+        .template-split-screen .middle-content-area { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+       
+        .template-full-bleed .export-card { padding: 0 !important; }
+        .template-full-bleed .middle-content-area { padding: 80px; }
+       
+        .template-centered-minimal { text-align: center; }
+        .template-centered-minimal .h-main, .template-centered-minimal .h-context, .template-centered-minimal .body-p { text-align: center; }
+        .template-centered-minimal .cta-box { border-left: none; border-top: 4px solid var(--line-color); text-align: center; }
+       
+        .template-editorial .h-main { font-size: 3.5rem; line-height: 1.3; }
+        .template-editorial .h-context { font-size: 1.5rem; font-style: normal; text-transform: uppercase; letter-spacing: 3px; }
+        .template-editorial .body-p { column-count: 2; column-gap: 40px; font-size: 1.6rem; }
+        .rail { position: absolute; z-index: 11; pointer-events: none; }
+        .rail-v { top: 0; bottom: 0; width: var(--side-line-width); background-color: var(--side-line-color); }
+        .rail-h { left: 0; right: 0; height: var(--horiz-line-height); background-color: var(--horiz-line-color); }
+        .r-left { left: 0; } .r-right { right: 0; }
+        .r-top { top: 0; } .r-bottom { bottom: 0; }
+        .logo-container { position: absolute; z-index: 100; transition: 0.3s; transform-origin: center; display: flex; align-items: center; justify-content: center; transform: scale(var(--logo-scale)); }
+        .pos-top-left { top: 60px; left: 80px; transform-origin: top left; }
+        .pos-top-center { top: 60px; left: 50%; transform: translateX(-50%) scale(var(--logo-scale)); }
+        .pos-top-right { top: 60px; right: 80px; transform-origin: top right; }
+        .pos-bottom-left { bottom: 240px; left: 80px; transform-origin: bottom left; }
+        .pos-bottom-right { bottom: 240px; right: 80px; transform-origin: bottom right; }
+        .pos-bottom-center { bottom: 240px; left: 50%; transform: translateX(-50%) scale(var(--logo-scale)); }
+        .corner-decor { position: absolute; width: 80px; height: 80px; z-index: 12; pointer-events: none; border: 0 solid var(--corner-color); }
+        .c-tl { top: 20px; left: 20px; border-top-width: var(--corner-weight); border-left-width: var(--corner-weight); }
+        .c-tr { top: 20px; right: 20px; border-top-width: var(--corner-weight); border-right-width: var(--corner-weight); }
+        .c-bl { bottom: 20px; left: 20px; border-bottom-width: var(--corner-weight); border-left-width: var(--corner-weight); }
+        .c-br { bottom: 20px; right: 20px; border-bottom-width: var(--corner-weight); border-right-width: var(--corner-weight); }
+        .h-main, .h-context, .cta-text { white-space: pre-wrap !important; }
+        r { color: #ff4d4d !important; font-weight: 900 !important; }
+        g { color: #22c55e !important; font-weight: 900 !important; }
+        o { color: #f59e0b !important; font-weight: 900 !important; }
+        b { color: #3b82f6 !important; font-weight: 900 !important; }
+        .verdict-container {
+            display: flex; width: 100%; height: 100%; gap: 0;
+            border: 2px solid var(--line-color); margin-top: 20px;
+            overflow: hidden; border-radius: 15px; position: relative; z-index: 5;
+        }
+        .verdict-box { flex: 1; padding: 40px; display: flex; flex-direction: column; justify-content: center; }
+        .verdict-old { background: rgba(255, 77, 77, 0.08); border-right: 1px solid var(--line-color); }
+        .verdict-new { background: rgba(34, 197, 94, 0.08); }
+        .verdict-label { font-family: var(--h-font); font-size: 1.4rem; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 2px; font-weight: 900; }
+        * { box-sizing: border-box; }
+        body { font-family: sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
+        .controls-container { position: sticky; top: 0; z-index: 1000; transition: 0.4s ease; }
+        .controls {
+            background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(15px); border-bottom: 1px solid #333;
+            padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;
+            max-height: 85vh; overflow-y: auto;
+        }
+        .controls.minimized { transform: translateY(-100%); pointer-events: none; opacity: 0; position: absolute; }
+        .ui-toggle { position: fixed; top: 15px; right: 20px; z-index: 1100; background: var(--gold); color: #000; border: none; padding: 10px 18px; font-weight: 900; cursor: pointer; border-radius: 4px; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; }
+        .input-group label { font-size: 0.6rem; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 5px; }
+        textarea, input, select { width: 100%; background: #111; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; font-size: 0.75rem; }
+        .control-sep { grid-column: 1 / -1; border-top: 1px solid #333; margin: 10px 0; padding-top: 10px; color: var(--gold); font-size: 0.7rem; font-weight: 900; letter-spacing: 2px; }
+        .safe-zone-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            border: 80px solid rgba(255, 0, 0, 0.15); pointer-events: none; z-index: 999; display: none;
+        }
+        .watermark-overlay {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            font-size: 8rem; font-weight: 900; color: var(--line-color); opacity: var(--watermark-opacity);
+            white-space: normal; pointer-events: none; z-index: 2; font-family: var(--h-font);
+            text-transform: uppercase; width: 120%; max-width: 120%; text-align: center;
+            line-height: 0.9; display: flex; align-items: center; justify-content: center; overflow: visible;
+        }
+        .bridge-container { display: flex; align-items: center; gap: 50px; flex: 1; width: 100%; min-height: 0; margin: 20px 0; position: relative; z-index: 3;}
+        .bridge-text { flex: 1.2; }
+        .bridge-visual { flex: 1; height: 100%; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(197, 160, 89, 0.2); border-radius: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        .bridge-visual img { max-width: 95%; max-height: 95%; object-fit: contain; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .kk-table { width: 100%; border-collapse: collapse; margin-top: 15px; border: 2px solid var(--line-color); font-family: var(--b-font); table-layout: auto; }
+        .kk-table th { background: var(--line-color); color: #000; padding: 15px 25px; text-align: inherit; font-size: calc(var(--b-size) * 0.45); text-transform: uppercase; letter-spacing: 1px; border-right: 1px solid rgba(0,0,0,0.15); }
+        .kk-table td { padding: 15px 25px; border-bottom: 1px solid rgba(197, 160, 89, 0.2); border-right: 1px solid rgba(197, 160, 89, 0.3); color: #fff; font-size: calc(var(--b-size) * 0.5); vertical-align: top; white-space: normal !important; word-wrap: break-word; overflow-wrap: break-word; }
+        .kk-table th:last-child, .kk-table td:last-child { border-right: none; }
+        .kk-table tr:nth-child(even) { background: rgba(255,255,255,0.05); }
+        .d_margin { border: 40px solid var(--obsidian); outline: 2px solid var(--line-color); outline-offset: -20px; }
+        .h_royal { border: 30px solid var(--line-color); outline: 4px double var(--line-color); outline-offset: -15px; box-shadow: inset 0 0 100px rgba(0,0,0,0.8); }
+        .h_temple { border: 35px solid var(--obsidian); border-top: 50px solid var(--line-color); border-bottom: 50px solid var(--line-color); }
+        .h_filigree { border: 25px double var(--line-color); outline: 2px solid var(--line-color); outline-offset: 10px; }
+        .h_silk { border: 25px solid var(--line-color); border-style: ridge; }
+        .h_palace { border: 30px solid var(--line-color); outline: 15px solid var(--obsidian); outline-offset: -30px; }
+        .h_copper { border: 35px solid #4b2c20; outline: 3px solid var(--line-color); outline-offset: -18px; }
+        .h_parchment { background-color: #f4ece0 !important; border: 4px solid var(--line-color); color: #222 !important; }
+        .h_parchment .body-p, .h_parchment .h-main, .h_parchment .h-context { color: #222 !important; }
+        .h_ivory { border: 50px solid #fffdf0; outline: 1px solid #d4c5a1; outline-offset: -25px; }
+        .d_minimal { border-top: 25px solid var(--line-color); }
+        .no_border { border: none !important; outline: none !important; }
+        .h_zari { border: var(--border-width-main) solid transparent; border-image: linear-gradient(45deg, var(--line-color), var(--line-color-2), var(--line-color)) 1; outline: var(--line-weight) solid var(--line-color-2); outline-offset: calc(var(--border-width-main) * -0.5); box-shadow: inset 0 0 50px rgba(0,0,0,0.9); }
+        .h_durbar { border: var(--border-width-main) solid var(--line-color); outline: var(--line-weight) double var(--line-color-2); outline-offset: -12px; box-shadow: inset 0 0 0 4px var(--obsidian), inset 0 0 0 6px var(--line-color-2); }
+        .h_mandala { border: var(--border-width-main) solid var(--obsidian); outline: var(--line-weight) solid var(--line-color); outline-offset: -5px; box-shadow: inset 0 0 0 2px var(--line-color-2), inset 0 0 0 15px var(--obsidian), inset 0 0 0 17px var(--line-color); }
+        .card-bg-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        .card-bg-overlay img { width: 100%; height: 100%; object-fit: cover; }
+       
+        .middle-content-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            z-index: 3;
+            position: relative;
+        }
+       
+        .top-section { position: relative; z-index: 3; min-height: 0px; }
+       
+        .head-stack { margin-top: var(--h-top-margin); margin-bottom: var(--h-bottom-margin); }
+        .divider { display: var(--line-display); width: 100%; height: var(--line-weight); margin: 15px 0; background: linear-gradient(90deg, var(--line-color) 0%, var(--line-color-2) 50%, rgba(0,0,0,0) 100%); opacity: 0.7; }
+        .kk-dual-sep {
+            display: var(--line-display);
+            width: var(--sep-width);
+            height: var(--sep-thickness);
+            margin: var(--sep-margin) auto;
+            background: linear-gradient(to right, var(--sep-color-1) 50%, var(--sep-color-2) 50%);
+            border: none;
+            opacity: 1;
+        }
+        .h-main { font-family: var(--h-font); font-size: var(--h-size); color: var(--h-color); font-weight: 900; line-height: 1.1; margin: var(--gap-h-s) 0; z-index: 3; position: relative; text-align: var(--text-align); }
+        .h-context { font-family: var(--s-font); font-size: var(--s-size); color: var(--s-color); font-style: italic; margin-bottom: var(--gap-s-b); z-index: 3; position: relative; text-align: var(--text-align); }
+        .body-p { font-family: var(--b-font); font-size: var(--b-size); color: var(--b-color); line-height: var(--b-lh); font-weight: 300; z-index: 3; position: relative; white-space: pre-wrap; text-align: var(--text-align); }
+       
+        .bottom-wrap { margin-top: auto; z-index: 3; position: relative; width: 100%; }
+       
+        .cta-box {
+            background: var(--cta-bg);
+            border-left: 5px solid var(--line-color);
+            padding: 25px; margin-top: 15px;
+            backdrop-filter: var(--cta-blur);
+        }
+       
+        .cta-text { font-family: var(--cta-font); font-weight: 900; text-transform: uppercase; font-size: var(--cta-size); color: var(--cta-txt); }
+        .branding { margin-top: 30px; font-family: var(--brand-font); letter-spacing: var(--brand-ls); color: var(--brand-color); border-top: 1px solid rgba(197, 160, 89, 0.2); padding-top: 20px; font-size: var(--brand-size); text-align: var(--text-align); }
+        .trust-badge { font-family: var(--b-font); font-size: 0.7rem; color: var(--trust-color); opacity: 0.8; text-transform: uppercase; letter-spacing: 2px; margin-top: 15px; border-top: 1px solid rgba(197, 160, 89, 0.2); padding-top: 10px; text-align: var(--text-align); }
+        .dl-btn { position: absolute; top: -50px; right: 0; background: #22c55e; border: none; color: #fff; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .bold { font-weight: 900; text-decoration: underline var(--line-color) 4px; }
+        .shock { background: var(--shock-bg); color: var(--shock-txt); padding: 0 10px; font-weight: 900; }
+        .p-btn { flex: 1; padding: 8px; background: #222; border: 1px solid #444; color: var(--gold); cursor: pointer; font-size: 0.65rem; border-radius: 4px; font-weight: 900; text-transform: uppercase; }
+        .del-btn { background: #7f1d1d !important; color: white !important; margin-top: 4px; }
+        .preview-phone { width: 360px; height: 480px; border: 10px solid #1a1a1a; border-radius: 30px; overflow: hidden; position: relative; margin: 40px auto; background: #000; }
+        #phone-slider { display: flex; width: 500%; height: 100%; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .phone-slide { width: 20%; height: 100%; transform-origin: top left; pointer-events: none; }
+        .sync-btn { background: var(--gold); color: #000; border: none; font-weight: 900; padding: 15px; border-radius: 4px; cursor: pointer; text-transform: uppercase; grid-column: 1 / -1; margin-top: 10px; transition: 0.3s; }
+        .stage { padding: 50px 20px; display: flex; flex-direction: column; align-items: center; gap: 80px; }
+        .export-card { width: var(--card-w) !important; height: var(--card-h) !important; padding: 80px; position: relative; display: flex; flex-direction: column; justify-content: flex-start; overflow: hidden; }
+       
+        .density-tag { font-size: 0.55rem; padding: 2px 5px; border-radius: 3px; font-weight: 900; margin-left: 10px; }
+        .density-low { background: #22c55e; color: #000; }
+        .density-ok { background: #eab308; color: #000; }
+        .density-high { background: #ef4444; color: #fff; }
+        .smart-metric { font-size: 0.65rem; color: #888; display: block; margin-top: 4px; font-family: monospace; }
+       
+        .template-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(197, 160, 89, 0.05);
+            border-radius: 8px;
+        }
+       
+        .template-thumb {
+            padding: 15px 10px;
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.3s;
+            font-size: 0.65rem;
+            color: #888;
+            position: relative;
+        }
+       
+        .template-thumb:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            transform: translateY(-2px);
+        }
+       
+        .template-thumb.active {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+        }
+        .template-desc {
+            font-size: 0.55rem;
+            color: #aaa;
+            margin-top: 4px;
+            line-height: 1.2;
+        }
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 10;
+        }
+        .template-thumb:hover .tooltip {
+            opacity: 1;
+        }
+
+        /* ───────────────────────────────────────────────
+           NEW STYLES ADDED FOR COMPARISON MODE
+           ─────────────────────────────────────────────── */
+        .comparison-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin: 30px auto;
+            max-width: 100%;
+        }
+        .comparison-card-wrapper {
+            position: relative;
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            padding: 12px;
+            background: rgba(30,30,30,0.7);
+        }
+        .comparison-label {
+            position: absolute;
+            top: -14px;
+            left: 20px;
+            background: var(--gold);
+            color: black;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 900;
+            font-size: 0.95rem;
+        }
+        .before-after-container {
+            position: relative;
+            width: 100%;
+            max-width: 1100px;
+            margin: 20px auto;
+        }
+        .before-after-slider {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+        }
+        .slider-handle {
+            position: absolute;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gold);
+            cursor: ew-resize;
+            pointer-events: all;
+            box-shadow: 0 0 12px rgba(197,160,89,0.7);
+        }
+        .slider-handle::before {
+            content: "◀ ▶";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--gold);
+            color: black;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        #comparisonView .export-card {
+            width: 540px !important;
+            height: 1350px !important;
+            transform: scale(0.58);
+            transform-origin: top left;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<button class="ui-toggle" onclick="toggleUI()">Show/Hide Controls</button>
+<div class="controls-container">
+    <div class="controls" id="ui">
+        <div class="control-sep">🎨 QUICK APPLY: 10 MASTER TEMPLATES</div>
+        <div class="template-preview-grid" style="grid-column: 1 / -1;">
+            <div class="template-thumb" onclick="applyQuickTemplate(1)" id="quick-temp-1">
+                <div style="font-weight:900; margin-bottom:5px;">1. STANDARD</div>
+                <div>Full content</div>
+                <div class="template-desc">Classic layout with headline, subheadline & body</div>
+                <span class="tooltip">Best for: general purpose posts</span>
+            </div>
+            <div class="template-thumb" onclick="applyQuickTemplate(2)" id="quick-temp-2">
+                <div style="font-weight:900; margin-bottom:5px;">2. QUOTE</div>
+                <div>Hero quote</div>
+                <div class="template-desc">Large centered italic quote style</div>
+                <span class="tooltip">Best for: motivational / key message cards</span>
+            </div>
+            <div class="template-thumb" onclick="applyQuickTemplate(3)" id="quick-temp-3">
+                <div style="font-weight:900; margin-bottom:5px;">3. MINIMAL</div>
+                <div>No subhead</div>
+                <div class="template-desc">Very clean – headline + body only</div>
+                <span class="tooltip">Best for: elegant & short messages</span>
+            </div>
+            <div class="template-thumb" onclick="applyQuickTemplate(4)" id="quick-temp-4">
+                <div style="font-weight:900; margin-bottom:5px;">4. IMAGE</div>
+                <div>Picture focus</div>
+                <div class="template-desc">Large visual area beside text</div>
+                <span class="tooltip">Best for: before/after, charts, products</span>
+            </div>
+            <div class="template-thumb" onclick="applyQuickTemplate(5)" id="quick-temp-5">
+                <div style="font-weight:900; margin-bottom:5px;">5. BIG NUMBER</div>
+                <div>Data impact</div>
+                <div class="template-desc">Huge centered number + explanation</div>
+                <span class="tooltip">Best for: statistics & key metrics</span>
+            </div>
+            <div class="template-thumb" onclick="applyQuickTemplate(6)" id="quick-temp-6">
+                <div style="font-weight:900; margin-bottom:5px;">6. STATS GRID</div>
+                <div>2x2 layout</div>
+                <div class="template-desc">Four key stats in grid format</div>
+                <span class="tooltip">Best for: comparison & bullet data</span>
+            </div>
+            <div class="template-thumb" onclick="applyQuickTemplate(7)" id="quick-temp-7">
+                <div style="font-weight:900; margin-bottom:5px;">7. TIMELINE</div>
+                <div>Vertical flow</div>
+                <div class="template-desc">Step-by-step vertical timeline style</div>
+                <span class="tooltip">Best for: processes & journeys</span>
+            </div>
+            <div class="template-thumb" onclick="applyQuickTemplate(8)" id="quick-temp-8">
+                <div style="font-weight:900; margin-bottom:5px;">8. SPLIT</div>
+                <div>Two columns</div>
+                <div class="template-desc">Left-right content split</div>
+                <span class="tooltip">Best for: before/after or pros/cons</span>
+            </div>
+            <div class="template-thumb" onclick="applyQuickTemplate(9)" id="quick-temp-9">
+                <div style="font-weight:900; margin-bottom:5px;">9. CENTERED</div>
+                <div>All centered</div>
+                <div class="template-desc">Perfectly symmetrical centered layout</div>
+                <span class="tooltip">Best for: announcements & strong statements</span>
+            </div>
+            <div class="template-thumb" onclick="applyQuickTemplate(10)" id="quick-temp-10">
+                <div style="font-weight:900; margin-bottom:5px;">10. EDITORIAL</div>
+                <div>2-col text</div>
+                <div class="template-desc">Newspaper-style multi-column body</div>
+                <span class="tooltip">Best for: longer explanatory content</span>
+            </div>
+        </div>
+       
+        <div class="control-sep">⭐ BRAND KIT & PDF EXPORT</div>
+        <div class="input-group">
+            <label>Current Kit (10 Themes)</label>
+            <select id="brandKitSelect" onchange="loadBrandKit()">
+                <option value="default">KalpaKuber Gold (Active)</option>
+                <option value="silver">Royal Silver Elite</option>
+                <option value="deep_ocean">Deep Ocean Pro</option>
+                <option value="vedic">Vedic Emerald & Earth</option>
+                <option value="ruby">High-Impact Ruby</option>
+                <option value="minimal">Executive Ivory (Light)</option>
+                <option value="copper">Antique Copper Heritage</option>
+                <option value="slate">Modern Slate Tech</option>
+                <option value="rose">Rose Gold Wealth</option>
+                <option value="neon">Obsidian Neon Focus</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Master Template (Quick Fill)</label>
+            <select id="templateMaster" onchange="applyTemplate()">
+                <option value="">-- Choose Template --</option>
+                <option value="investment_table">Investment Table Comparison</option>
+                <option value="behavioral_leak">Behavioral Leak Hook</option>
+                <option value="impact_quote">High Impact Quote</option>
+                <option value="verdict_demo">Verdict: Old vs KalpaKuber</option>
+            </select>
+        </div>
+        <button class="p-btn" style="background:#2563eb; color:white; grid-column: span 1;" onclick="exportAllPDF()">Download Full Deck (PDF)</button>
+        <button class="p-btn" style="background:#c5a059; color:black; grid-column: span 1;" onclick="harmonizeColors()">Harmonize Colors</button>
+        <div class="control-sep">🚀 MODULAR LAYOUT & SAFE ZONES</div>
+        <div class="input-group">
+            <label>UI Safe Zone (Overlay)</label>
+            <button class="p-btn" onclick="toggleSafeZone()">Toggle Red Overlay</button>
+        </div>
+        <div class="input-group">
+            <label>Visible Dividers</label>
+            <div style="font-size:0.7rem;">
+                <input type="checkbox" id="line1" checked onchange="debounceRender()"> Top
+                <input type="checkbox" id="line2" checked onchange="debounceRender()"> Mid
+                <input type="checkbox" id="line3" checked onchange="debounceRender()"> Body
+                <input type="checkbox" id="line4" checked onchange="debounceRender()"> Bottom
+            </div>
+        </div>
+        <div class="control-sep">📐 DUAL-TONE SEPARATOR ENGINE</div>
+        <div class="input-group">
+            <label>Divider Mode</label>
+            <select id="inSepMode" onchange="debounceRender()">
+                <option value="gradient">Legacy Gradient</option>
+                <option value="dual">Dual-Tone (Switch Phase)</option>
+            </select>
+        </div>
+        <div class="input-group"><label>Sep Color 1</label><input type="color" id="inSepColor1" value="#c5a059" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Sep Color 2</label><input type="color" id="inSepColor2" value="#ffffff" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Sep Thickness (px)</label><input type="number" id="inSepThick" value="4" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Sep Width (%)</label><input type="number" id="inSepWidth" value="100" oninput="debounceRender()"></div>
+        <div class="control-sep">1. PLATFORM & COMPLIANCE</div>
+        <div class="input-group">
+            <label>Ecosystem Aspect Ratio</label>
+            <select id="inPlatform" onchange="applyPlatform()">
+                <option value="insta_port">Instagram Carousel (4:5)</option>
+                <option value="whatsapp">WhatsApp/Story (9:16) [Safe Mode]</option>
+                <option value="twitter">Twitter/Reddit (16:9 Landscape)</option>
+                <option value="linkedin">LinkedIn/FB (Square 1:1)</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Global Logo Position</label>
+            <select id="inLogoPos" onchange="debounceRender()">
+                <option value="top-left">Top Left</option>
+                <option value="top-center">Top Center</option>
+                <option value="top-right" selected>Top Right</option>
+                <option value="bottom-left">Bottom Left</option>
+                <option value="bottom-right">Bottom Right</option>
+                <option value="bottom-center">Bottom Center</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Logo Scale (0.5 - 2.0)</label>
+            <input type="number" id="inLogoScale" value="1.0" step="0.1" oninput="debounceRender()">
+        </div>
+        <div class="input-group" style="background: rgba(197, 160, 89, 0.1); padding: 8px; border-radius: 4px;">
+            <label>⬆️ Heading Top Spacing (Pull Up/Down)</label>
+            <input type="number" id="inHeadingTopSpacing" value="0" step="10" oninput="debounceRender()">
+            <small style="font-size:0.5rem; color:#888;">Negative = Pull up, Positive = Push down</small>
+        </div>
+        <div class="input-group" style="background: rgba(197, 160, 89, 0.1); padding: 8px; border-radius: 4px;">
+            <label>⬇️ Heading Bottom Spacing (Pull Up/Down)</label>
+            <input type="number" id="inHeadingBottomSpacing" value="0" step="10" oninput="debounceRender()">
+            <small style="font-size:0.5rem; color:#888;">Negative = Pull up, Positive = Push down</small>
+        </div>
+        <div class="input-group">
+            <label>Trust Badge Color</label>
+            <input type="color" id="inTrustColor" value="#c5a059" oninput="debounceRender()"></div>
+        <div class="input-group">
+            <label>Trust Badge Status</label>
+            <select id="inTrust" onchange="debounceRender()">
+                <option value="show">On (ARN 314916)</option>
+                <option value="none">Off</option>
+            </select>
+        </div>
+        <div class="control-sep">2. DUAL BORDERS, COLORS, CORNERS & RAILS</div>
+        <div class="input-group"><label>Border/Frame Color 1</label><input type="color" id="inLineColor" value="#c5a059" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Border/Frame Color 2</label><input type="color" id="inLineColor2" value="#f3e5ab" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Main Border Width</label><input type="number" id="inBorderW" value="30" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Inner Line Width</label><input type="number" id="inLineW" value="2" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Corner Accent Color</label><input type="color" id="inCornerColor" value="#ffffff" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Corner Weight (px)</label><input type="number" id="inCornerWeight" value="6" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Vertical Rail Color</label><input type="color" id="inSideLineColor" value="#c5a059" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Vertical Rail Width (px)</label><input type="number" id="inSideLineWidth" value="2" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Horizontal Rail Color</label><input type="color" id="inHorizLineColor" value="#c5a059" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Horizontal Rail Height (px)</label><input type="number" id="inHorizLineHeight" value="2" oninput="debounceRender()"></div>
+        <div class="control-sep">3. TYPOGRAPHY (10 OFFLINE FONTS)</div>
+        <div class="input-group">
+            <label>Body Font Stack</label>
+            <select id="fB_Stack" onchange="debounceRender()">
+                <option value="'Segoe UI', sans-serif">Segoe UI (System Modern)</option>
+                <option value="'Georgia', serif">Georgia (System Heritage)</option>
+                <option value="'Times New Roman', serif">Times New Roman (Elite)</option>
+                <option value="'Palatino', serif">Palatino (Book Classical)</option>
+                <option value="'Arial', sans-serif">Arial (Clean Technical)</option>
+                <option value="'Verdana', sans-serif">Verdana (Wide-Screen)</option>
+                <option value="'Impact', sans-serif">Impact (High Impact)</option>
+                <option value="'Courier New', monospace">Courier New (Data/Tech)</option>
+                <option value="'Trebuchet MS', sans-serif">Trebuchet (Modern Dynamic)</option>
+                <option value="'Tahoma', sans-serif">Tahoma (Solid Sans)</option>
+            </select>
+        </div>
+        <div class="input-group"><label>Headline Font</label><select id="fH" class="uni-font" onchange="debounceRender()"></select></div>
+        <div class="input-group"><label>Headline Color</label><input type="color" id="cH" value="#c5a059" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Headline Size (rem)</label><input type="number" id="sH" value="4.2" step="0.1" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Sub-Head Font</label><select id="fS" class="uni-font" onchange="debounceRender()"></select></div>
+        <div class="input-group"><label>Sub Color</label><input type="color" id="cS" value="#c5a059" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Sub Size (rem)</label><input type="number" id="sS" value="1.8" step="0.1" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Body Color</label><input type="color" id="cB" value="#ffffff" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Body Size (Base)</label><input type="number" id="sB" value="2.0" step="0.1" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Line Height</label><input type="number" id="lhB" value="1.4" step="0.1" oninput="debounceRender()"></div>
+        <div class="control-sep">4. PRESETS & ROYAL THEMES</div>
+        <div class="preset-row" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:5px; grid-column: 1/-1;">
+            <button class="p-btn" onclick="preset('save', 1)">Save 1</button>
+            <button class="p-btn" onclick="preset('save', 2)">Save 2</button>
+            <button class="p-btn" onclick="preset('load', 1)">Load 1</button>
+            <button class="p-btn" onclick="preset('load', 2)">Load 2</button>
+        </div>
+        <div class="input-group">
+            <label>Royal Border Design</label>
+            <select id="inTheme" onchange="debounceRender()">
+                <option value="d_margin">Margin (Executive)</option>
+                <option value="h_royal" selected>Royal Decree Frame</option>
+                <option value="h_zari">NEW: Royal Zari Silk</option>
+                <option value="h_durbar">NEW: Grand Durbar</option>
+                <option value="h_mandala">NEW: Vedic Mandala</option>
+                <option value="h_temple">Temple Arch</option>
+                <option value="h_filigree">Double Filigree</option>
+                <option value="h_silk">Silk Ridge</option>
+                <option value="h_palace">Palace Pillar</option>
+                <option value="h_copper">Copper Tamrapatra</option>
+                <option value="h_parchment">Antique Paper</option>
+                <option value="h_ivory">Ivory Carver</option>
+                <option value="d_minimal">Modern Top-Bar</option>
+                <option value="no_border">No Border</option>
+            </select>
+        </div>
+        <div class="control-sep">5. CTA & BRANDING (GLASSMORPHISM)</div>
+        <div class="input-group"><label>CTA Opacity (0-1)</label><input type="number" id="inCtaOpac" value="0.15" step="0.05" oninput="debounceRender()"></div>
+        <div class="input-group"><label>CTA Blur (px)</label><input type="number" id="inCtaBlur" value="0" step="1" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Global CTA Text</label><textarea id="ctaVal" oninput="debounceRender()">RUN YOUR GOAL CALCULATOR →</textarea></div>
+        <div class="input-group"><label>CTA Size (rem)</label><input type="number" id="sCTA" value="1.1" step="0.1" oninput="debounceRender()"></div>
+        <div class="input-group"><label>CTA BG Color</label><input type="color" id="inCtaBg" value="#1a243a" oninput="debounceRender()"></div>
+        <div class="input-group"><label>CTA Text Color</label><input type="color" id="inCtaTxt" value="#ffffff" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Footnote Text</label><input type="text" id="brandVal" value="© 2026 KALPAKUBER INVESTMENTS" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Footnote Size (rem)</label><input type="number" id="sBrand" value="0.8" step="0.05" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Footnote Color</label><input type="color" id="cBrand" value="#c5a059" oninput="debounceRender()"></div>
+        <div class="control-sep">6. GLOBAL HEADLINE & ALIGNMENT</div>
+        <div class="input-group"><label>Main Headline</label><textarea id="inH1" oninput="debounceRender()">The Inflation Split.</textarea></div>
+        <div class="input-group"><label>Sub-Head Hook</label><textarea id="inSub" oninput="debounceRender()">A Silent Retirement Killer.</textarea></div>
+        <div class="input-group">
+            <label>Alignment</label>
+            <select id="inAlign" onchange="debounceRender()">
+                <option value="left">Left</option>
+                <option value="center" selected>Center</option>
+                <option value="right">Right</option>
+            </select>
+        </div>
+        <div class="input-group"><label>Base BG Color</label><input type="color" id="inColor" value="#021F2D" oninput="debounceRender()"></div>
+       
+        <div class="input-group"><label>BG Color Opacity (0.0-1.0)</label><input type="number" id="inBgOpac" value="1.0" step="0.05" oninput="debounceRender()"></div>
+        <div class="input-group"><label>Watermark Opacity (0.0-0.4)</label><input type="number" id="inWaterOpac" value="0.07" step="0.01" oninput="debounceRender()"></div>
+        <div class="input-group" style="background: rgba(197, 160, 89, 0.1); padding: 5px; border-radius: 4px;">
+            <label>Gap: Headline to Subhead (px)</label>
+            <input type="number" id="inGapHS" value="10" step="1" oninput="debounceRender()">
+        </div>
+        <div class="input-group" style="background: rgba(197, 160, 89, 0.1); padding: 5px; border-radius: 4px;">
+            <label>Gap: Subhead to Body (px)</label>
+            <input type="number" id="inGapSB" value="20" step="1" oninput="debounceRender()">
+        </div>
+       
+        <div class="input-group">
+            <label>Logo Upload</label>
+            <input type="file" id="logoUpload" onchange="handleStaticImg(this, 'logo')">
+            <button class="p-btn del-btn" onclick="clearImage('logo')">Clear Logo</button>
+        </div>
+        <div class="input-group">
+            <label>Global BG Image</label>
+            <input type="file" id="bgUpload" onchange="handleGlobalBg(this)">
+            <button class="p-btn del-btn" onclick="clearImage('globalBg')">Clear Global BG</button>
+        </div>
+        <div class="input-group"><label>BG Image Opacity (0.0-1.0)</label><input type="number" id="bgOpacityInput" value="0.15" step="0.05" oninput="debounceRender()"></div>
+
+        <!-- ───────────────────────────────────────────────
+             NEW SECTION – COMPARISON MODE (added here)
+             ─────────────────────────────────────────────── -->
+        <div class="control-sep">🔍 COMPARISON MODE (A/B Testing)</div>
+        <div class="input-group">
+            <label>Enable Side-by-Side Comparison</label>
+            <input type="checkbox" id="compareEnabled" onchange="toggleComparison()">
+        </div>
+        <div id="compareControls" style="display:none;">
+            <div class="input-group">
+                <label>Slide A (Left / Before)</label>
+                <select id="compareA">
+                    <option value="1">Slide 1</option>
+                    <option value="2">Slide 2</option>
+                    <option value="3" selected>Slide 3</option>
+                    <option value="4">Slide 4</option>
+                    <option value="5">Slide 5</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Slide B (Right / After)</label>
+                <select id="compareB">
+                    <option value="1">Slide 1</option>
+                    <option value="2">Slide 2</option>
+                    <option value="3">Slide 3</option>
+                    <option value="4" selected>Slide 4</option>
+                    <option value="5">Slide 5</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Before / After Split (drag handle)</label>
+                <input type="range" id="splitPos" min="0" max="100" value="50" step="1" oninput="updateSplit(this.value)">
+            </div>
+        </div>
+
+        <div class="control-sep">7. SLIDE CONTENT, TEMPLATES, WATERMARKS & OVERRIDES</div>
+        <div id="slideConfigs"></div>
+       
+        <button class="sync-btn" onclick="render()">Build Evolution</button>
+        <button class="sync-btn" onclick="exportAll()" style="background:#2563eb; color:white; margin-top:5px;">Download All PNGs</button>
+    </div>
+</div>
+<div id="stage" class="stage"></div>
+
+<!-- NEW comparison preview area -->
+<div id="comparisonView" style="display:none; padding:40px 20px; text-align:center;">
+    <h3 style="color:var(--gold); margin-bottom:20px;">Comparison View (A vs B)</h3>
+    <div class="comparison-container" id="compareContainer"></div>
+</div>
+
+<div class="preview-phone"><div id="phone-slider"></div></div>
+
+<script>
+    const masterFonts = [
+        {name: 'Heritage Serif (Georgia)', val: "'Georgia', serif"},
+        {name: 'Classical Serif (Palatino)', val: "'Palatino Linotype', 'Book Antiqua', serif"},
+        {name: 'Old Money (Times)', val: "'Times New Roman', serif"},
+        {name: 'Elite Modern (Helvetica)', val: "'Helvetica Neue', Helvetica, Arial, sans-serif"},
+        {name: 'Clean Tech (Segoe)', val: "'Segoe UI', Roboto, sans-serif"},
+        {name: 'Sleek Sans (Verdana)', val: "'Verdana', sans-serif"}
+    ];
+    document.querySelectorAll('.uni-font').forEach(sel => {
+        masterFonts.forEach(f => {
+            let o = document.createElement('option'); o.value = f.val; o.innerText = f.name; sel.appendChild(o);
+        });
+    });
+    let userLogo = "";
+    let globalBgImg = "";
+    let slideImages = { 1: "", 2: "", 3: "", 4: "", 5: "" };
+    let renderTimeout;
+    let slideTemplates = { 1: "", 2: "", 3: "", 4: "", 5: "" };
+    let slideLayouts = { 1: "standard", 2: "standard", 3: "standard", 4: "standard", 5: "standard" };
+   
+    const templateConfigs = {
+        "": { name: "Standard", class: "", layout: "standard", showSub: true },
+        "template-quote-hero": { name: "Quote Hero", class: "template-quote-hero", layout: "standard", showSub: false },
+        "template-minimal": { name: "Minimal", class: "template-minimal", layout: "standard", showSub: false },
+        "template-image-focus": { name: "Image Focus", class: "template-image-focus", layout: "bridge", showSub: true },
+        "template-big-number": { name: "Big Number", class: "template-big-number", layout: "standard", showSub: true },
+        "template-stats-grid": { name: "Stats Grid", class: "template-stats-grid", layout: "standard", showSub: true },
+        "template-timeline": { name: "Timeline", class: "template-timeline", layout: "standard", showSub: true },
+        "template-split-screen": { name: "Split Screen", class: "template-split-screen", layout: "standard", showSub: true },
+        "template-centered-minimal": { name: "Centered Minimal", class: "template-centered-minimal", layout: "standard", showSub: true },
+        "template-editorial": { name: "Editorial", class: "template-editorial", layout: "standard", showSub: true }
+    };
+   
+    const initialSlideContent = [
+        "A standard [6% CPI] is a lie. Your retirement cost is split between lifestyle and healthcare.",
+        "While groceries grow at 5%, Medical Inflation in India is hitting [14% p.a.].",
+        "At 14%, your healthcare costs will **Double every 5 years**. Is your SIP keeping up?",
+        "Traditional plans fail because they use **Average CPI**. You need [Liability Matching].",
+        "The solution? __De-risk early__. Protect your base and secure your outcome today."
+    ];
+
+    // Undo / Redo stack (original)
+    let history = [];
+    let historyIndex = -1;
+    const MAX_HISTORY = 12;
+
+    function saveState() {
+        const state = {
+            inputs: {},
+            slideTemplates: { ...slideTemplates },
+            slideLayouts: { ...slideLayouts }
+        };
+        document.querySelectorAll('#ui input, #ui select, #ui textarea').forEach(el => {
+            if (el.id) state.inputs[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+        });
+        history = history.slice(0, historyIndex + 1);
+        history.push(state);
+        if (history.length > MAX_HISTORY) history.shift();
+        historyIndex = history.length - 1;
+    }
+
+    function loadState(idx) {
+        if (idx < 0 || idx >= history.length) return;
+        const state = history[idx];
+        historyIndex = idx;
+        Object.entries(state.inputs).forEach(([id, val]) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (el.type === 'checkbox') el.checked = val;
+            else el.value = val;
+        });
+        slideTemplates = { ...state.slideTemplates };
+        slideLayouts = { ...state.slideLayouts };
+        Object.keys(slideTemplates).forEach(i => {
+            const sel = document.getElementById(`template${i}`);
+            if (sel) sel.value = slideTemplates[i];
+        });
+        Object.keys(slideLayouts).forEach(i => {
+            const sel = document.getElementById(`layout${i}`);
+            if (sel) sel.value = slideLayouts[i];
+        });
+        render();
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.ctrlKey || e.metaKey) {
+            if (e.key === 'z') {
+                e.preventDefault();
+                if (historyIndex > 0) loadState(historyIndex - 1);
+            } else if (e.key === 'y') {
+                e.preventDefault();
+                if (historyIndex < history.length - 1) loadState(historyIndex + 1);
+            }
+        }
+    });
+
+    function applyQuickTemplate(num) {
+        const templateMap = {
+            1: "", 2: "template-quote-hero", 3: "template-minimal", 4: "template-image-focus",
+            5: "template-big-number", 6: "template-stats-grid", 7: "template-timeline",
+            8: "template-split-screen", 9: "template-centered-minimal", 10: "template-editorial"
+        };
+       
+        const demoContent = {
+            2: { h1: '"The goal is not to be rich."', sub: 'The goal is to stay rich.', body: 'Through inflation-proof income and liability matching, KalpaKuber protects what matters most: your financial freedom.', align: 'center' },
+            3: { h1: 'Healthcare Inflation: 14% p.a.', sub: '', body: 'While your SIP grows at 12%, medical costs are rising at 14%. Every year, you fall behind. Traditional planning ignores this split. KalpaKuber solves it.', align: 'left' },
+            5: { h1: '14%', sub: 'Annual Healthcare Inflation in India', body: 'Your medical costs will DOUBLE every 5 years. Is your retirement plan accounting for this?', align: 'center' },
+            6: { h1: 'The 4 Critical Gaps', sub: 'Traditional vs KalpaKuber', body: '₹50L Corpus @ 12% SIP\n\n₹1.2Cr Healthcare @ 14% Inflation\n\nGap: ₹70L Shortfall\n\nSolution: Liability Matching', align: 'left' }
+        };
+       
+        document.querySelectorAll('.template-thumb').forEach(t => t.classList.remove('active'));
+        document.getElementById(`quick-temp-${num}`).classList.add('active');
+       
+        const template = templateMap[num];
+        for(let i=1; i<=5; i++) {
+            slideTemplates[i] = template;
+            const sel = document.getElementById(`template${i}`);
+            if (sel) sel.value = template;
+        }
+       
+        if(demoContent[num]) {
+            document.getElementById('inH1').value = demoContent[num].h1;
+            document.getElementById('inSub').value = demoContent[num].sub;
+            document.getElementById('b1').value = demoContent[num].body;
+            document.getElementById('inAlign').value = demoContent[num].align;
+        }
+       
+        debounceRender();
+        saveState();
+    }
+
+    function createSlideInputs() {
+        const container = document.getElementById('slideConfigs');
+        const templateOptions = `
+            <option value="">Standard</option>
+            <option value="template-quote-hero">Quote Hero</option>
+            <option value="template-minimal">Minimal (No Subhead)</option>
+            <option value="template-image-focus">Image Focus</option>
+            <option value="template-big-number">Big Number</option>
+            <option value="template-stats-grid">Stats Grid (2x2)</option>
+            <option value="template-timeline">Timeline</option>
+            <option value="template-split-screen">Split Screen</option>
+            <option value="template-centered-minimal">Centered Minimal</option>
+            <option value="template-editorial">Editorial (2-col)</option>
+        `;
+       
+        const layoutOptions = `
+            <option value="standard">Full Width Text</option>
+            <option value="bridge">Split Bridge (Text + Visual)</option>
+        `;
+       
+        for(let i=1; i<=5; i++) {
+            container.innerHTML += `
+                <div class="input-group" style="background: #151515; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
+                    <strong>SLIDE ${i}</strong>
+                    <button class="p-btn del-btn" style="float:right;" onclick="resetSlide(${i})">Reset Slide</button>
+                    <label>🎨 Visual Template</label>
+                    <select id="template${i}" onchange="updateSlideTemplate(${i})">${templateOptions}</select>
+                   
+                    <label>Visual Layout Mode</label>
+                    <select id="layout${i}" onchange="updateSlideLayout(${i})">${layoutOptions}</select>
+                   
+                    <label>Watermark Impact Text</label>
+                    <input type="text" id="wOvr${i}" value="IMPACT" oninput="debounceRender()">
+                   
+                    <label>Headline Override</label>
+                    <textarea id="hOvr${i}" oninput="debounceRender()"></textarea>
+                   
+                    <label>Sub-Head Override</label>
+                    <textarea id="sOvr${i}" oninput="debounceRender()"></textarea>
+                   
+                    <label>CTA Override</label>
+                    <textarea id="ctaOvr${i}" placeholder="Global CTA used if empty" oninput="debounceRender()"></textarea>
+                   
+                    <label>Mode <span id="dens${i}" class="density-tag"></span></label>
+                    <select id="m${i}" onchange="debounceRender()">
+                        <option value="text">Standard Text</option>
+                        <option value="table">Table (use | )</option>
+                        <option value="verdict">Verdict (VS Split)</option>
+                    </select>
+                   
+                    <textarea id="b${i}" oninput="updateSmartMetrics(${i})">${initialSlideContent[i-1] || ''}</textarea>
+                    <span id="metric${i}" class="smart-metric"></span>
+                   
+                    <input type="file" id="slideUpload${i}" onchange="handleSlideImg(this, ${i})">
+                    <button class="p-btn del-btn" onclick="clearImage('slide', ${i})">Clear Slide Img</button>
+                </div>
+            `;
+        }
+    }
+
+    function resetSlide(n) {
+        if (!confirm(`Reset slide ${n} to initial state?`)) return;
+        document.getElementById(`template${n}`).value = "";
+        document.getElementById(`layout${n}`).value = "standard";
+        document.getElementById(`wOvr${n}`).value = "IMPACT";
+        document.getElementById(`hOvr${n}`).value = "";
+        document.getElementById(`sOvr${n}`).value = "";
+        document.getElementById(`ctaOvr${n}`).value = "";
+        document.getElementById(`m${n}`).value = "text";
+        document.getElementById(`b${n}`).value = initialSlideContent[n-1] || "";
+        slideTemplates[n] = "";
+        slideLayouts[n] = "standard";
+        slideImages[n] = "";
+        document.getElementById(`slideUpload${n}`).value = "";
+        debounceRender();
+        saveState();
+    }
+
+    function updateSlideTemplate(i) {
+        slideTemplates[i] = document.getElementById(`template${i}`).value;
+        const config = templateConfigs[slideTemplates[i]];
+        if(config && config.layout) {
+            slideLayouts[i] = config.layout;
+            document.getElementById(`layout${i}`).value = config.layout;
+        }
+        debounceRender();
+        saveState();
+    }
+
+    function updateSlideLayout(i) {
+        slideLayouts[i] = document.getElementById(`layout${i}`).value;
+        debounceRender();
+        saveState();
+    }
+
+    function clearImage(type, index) {
+        if(type === 'logo') { userLogo = ""; document.getElementById('logoUpload').value = ""; }
+        else if(type === 'globalBg') { globalBgImg = ""; document.getElementById('bgUpload').value = ""; }
+        else if(type === 'slide') { slideImages[index] = ""; document.getElementById(`slideUpload${index}`).value = ""; }
+        debounceRender();
+        saveState();
+    }
+
+    function toggleSafeZone() {
+        const zones = document.querySelectorAll('.safe-zone-overlay');
+        zones.forEach(z => z.style.display = z.style.display === 'block' ? 'none' : 'block');
+    }
+
+    function harmonizeColors() {
+        const primary = document.getElementById('inLineColor').value;
+        document.getElementById('cH').value = primary;
+        document.getElementById('cS').value = primary;
+        document.getElementById('inCtaBg').value = primary;
+        document.getElementById('cBrand').value = primary;
+        document.getElementById('inSepColor1').value = primary;
+        debounceRender();
+        saveState();
+    }
+
+    function updateSmartMetrics(i) {
+        const text = document.getElementById(`b${i}`).value;
+        const words = text.trim().split(/\s+/).length;
+        const chars = text.length;
+        const readingTime = Math.ceil(words / 200 * 60);
+        const readability = Math.min(100, Math.max(0, 100 - (chars / 10))).toFixed(0);
+        document.getElementById(`metric${i}`).innerText = `Reading Time: ${readingTime}s | Readability: ${readability}/100`;
+        debounceRender();
+    }
+
+    function loadBrandKit() {
+        const key = document.getElementById('brandKitSelect').value;
+       
+        let kit = { c1: "#c5a059", c2: "#f3e5ab", cH: "#c5a059", bg: "#021F2D", theme: "h_royal", fb: "'Segoe UI', sans-serif" };
+        if(key === 'silver') {
+            kit = { c1: "#C0C0C0", c2: "#E8E8E8", cH: "#C0C0C0", bg: "#0a0a0a", theme: "h_zari", fb: "'Palatino', serif" };
+        } else if(key === 'deep_ocean') {
+            kit = { c1: "#1a243a", c2: "#2563eb", cH: "#60a5fa", bg: "#021F2D", theme: "h_durbar", fb: "'Segoe UI', sans-serif" };
+        } else if(key === 'vedic') {
+            kit = { c1: "#065f46", c2: "#c5a059", cH: "#c5a059", bg: "#146b2e", theme: "h_mandala", fb: "'Georgia', serif" };
+        } else if(key === 'ruby') {
+            kit = { c1: "#991b1b", c2: "#f87171", cH: "#f87171", bg: "#450a0a", theme: "h_temple", fb: "'Impact', sans-serif" };
+        } else if(key === 'minimal') {
+            kit = { c1: "#d1d5db", c2: "#ffffff", cH: "#111827", bg: "#f9fafb", theme: "h_ivory", fb: "'Arial', sans-serif" };
+        } else if(key === 'copper') {
+            kit = { c1: "#7c2d12", c2: "#c5a059", cH: "#c5a059", bg: "#2d0a00", theme: "h_copper", fb: "'Times New Roman', serif" };
+        } else if(key === 'slate') {
+            kit = { c1: "#334155", c2: "#94a3b8", cH: "#f1f5f9", bg: "#0f172a", theme: "d_minimal", fb: "'Verdana', sans-serif" };
+        } else if(key === 'rose') {
+            kit = { c1: "#881337", c2: "#fb7185", cH: "#ffffff", bg: "#4c0519", theme: "h_silk", fb: "'Palatino', serif" };
+        } else if(key === 'neon') {
+            kit = { c1: "#22c55e", c2: "#000000", cH: "#22c55e", bg: "#000000", theme: "h_zari", fb: "'Trebuchet MS', sans-serif" };
+        }
+        document.getElementById('inLineColor').value = kit.c1;
+        document.getElementById('inLineColor2').value = kit.c2;
+        document.getElementById('cH').value = kit.cH;
+        document.getElementById('inColor').value = kit.bg;
+        document.getElementById('inTheme').value = kit.theme;
+        document.getElementById('fB_Stack').value = kit.fb;
+       
+        if(key === 'minimal') {
+            document.getElementById('cB').value = "#111827";
+            document.getElementById('cS').value = "#374151";
+            document.getElementById('inCtaBg').value = "#e5e7eb";
+            document.getElementById('inCtaTxt').value = "#111827";
+            document.getElementById('cBrand').value = "#111827";
+        } else {
+            document.getElementById('cB').value = "#ffffff";
+            document.getElementById('cS').value = kit.cH;
+            document.getElementById('inCtaBg').value = kit.c1;
+            document.getElementById('inCtaTxt').value = "#ffffff";
+            document.getElementById('cBrand').value = kit.cH;
+        }
+        debounceRender();
+        saveState();
+    }
+
+    function applyTemplate() {
+        const type = document.getElementById('templateMaster').value;
+        if(type === 'investment_table') {
+            document.getElementById('m1').value = 'table';
+            document.getElementById('b1').value = "ASSET | RETURNS | RISK \nFixed Deposit | 7.0% | Low \nEquity MF | 12.0% | High \nKalpaKuber | [Targeted] | Optimized";
+        } else if(type === 'behavioral_leak') {
+            document.getElementById('b1').value = "A [!!₹500 Leak!!] per day is not just coffee. \nOver 20 years, it is **₹1.2 Crores** lost. \nStop the drain today.";
+        } else if(type === 'impact_quote') {
+            document.getElementById('inAlign').value = 'center';
+            document.getElementById('b1').value = '"The goal is not to be rich. \nThe goal is to stay rich through ++Inflation Proof++ income."';
+        } else if(type === 'verdict_demo') {
+            document.getElementById('m1').value = 'verdict';
+            document.getElementById('b1').value = "Traditional plans ignore !!14% Inflation!!. VS KalpaKuber uses ++Liability Matching++ to secure your outcome.";
+        }
+        updateSmartMetrics(1);
+        debounceRender();
+        saveState();
+    }
+
+    function handleStaticImg(input, type) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            if(type === 'logo') userLogo = e.target.result;
+            debounceRender();
+            saveState();
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function handleGlobalBg(input) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            globalBgImg = e.target.result;
+            debounceRender();
+            saveState();
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function handleSlideImg(input, index) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            slideImages[index] = e.target.result;
+            debounceRender();
+            saveState();
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function toggleUI() {
+        document.getElementById('ui').classList.toggle('minimized');
+    }
+
+    function applyPlatform() {
+        const p = document.getElementById('inPlatform').value;
+        const root = document.documentElement;
+        if(p === 'whatsapp') {
+            root.style.setProperty('--card-w', '1080px');
+            root.style.setProperty('--card-h', '1920px');
+            root.style.setProperty('--b-lh', '1.55');
+        }
+        else if(p === 'twitter') {
+            root.style.setProperty('--card-w', '1200px');
+            root.style.setProperty('--card-h', '675px');
+        }
+        else if(p === 'linkedin') {
+            root.style.setProperty('--card-w', '1080px');
+            root.style.setProperty('--card-h', '1080px');
+        }
+        else {
+            root.style.setProperty('--card-w', '1080px');
+            root.style.setProperty('--card-h', '1350px');
+        }
+        debounceRender();
+        saveState();
+    }
+
+    function checkDensity(text) {
+        const c = text.length;
+        if(c < 75) return {l: 'LOW', c: 'density-low'};
+        if(c < 185) return {l: 'OK', c: 'density-ok'};
+        return {l: 'HIGH', c: 'density-high'};
+    }
+
+    function process(text, mode) {
+        if (!text) return "";
+        let html = String(text);
+        html = html
+            .replace(/!!(.*?)!!/g, '<r>$1</r>')
+            .replace(/\+\+(.*?)\+\+/g, '<g>$1</g>')
+            .replace(/\?\?(.*?)\?\?/g, '<o>$1</o>')
+            .replace(/@@(.*?)@@/g, '<b>$1</b>');
+        const redList = ["Risk", "Leak", "Tax", "Inflation", "Loss", "Debt", "Shortfall"];
+        const greenList = ["Growth", "Kuber", "Safety", "Income", "Profit", "SIP", "Secure", "Outcome"];
+        const orangeList = ["Warning", "Alert", "Volatility", "Change"];
+        const blueList = ["ARN", "SEBI", "Metric", "Calculator", "Targeted"];
+        redList.forEach(w => { html = html.replace(new RegExp(`\\b${w}\\b`, 'gi'), `<r>${w}</r>`); });
+        greenList.forEach(w => { html = html.replace(new RegExp(`\\b${w}\\b`, 'gi'), `<g>${w}</g>`); });
+        orangeList.forEach(w => { html = html.replace(new RegExp(`\\b${w}\\b`, 'gi'), `<o>${w}</o>`); });
+        blueList.forEach(w => { html = html.replace(new RegExp(`\\b${w}\\b`, 'gi'), `<b>${w}</b>`); });
+        html = html
+            .replace(/\*\*(.*?)\*\*/g, '<span class="bold">$1</span>')
+            .replace(/__(.*?)__/g, '<span style="font-style:italic">$1</span>')
+            .replace(/\[(.*?)\]/g, '<span class="shock">$1</span>');
+        if (mode === 'table' && text.includes('|')) {
+            const lines = text.trim().split('\n');
+            let tableHtml = '<table class="kk-table">';
+            lines.forEach((line, idx) => {
+                const cells = line.split('|').map(c => c.trim());
+                tableHtml += '<tr>';
+                cells.forEach(cell => {
+                    let cellContent = process(cell, 'text');
+                    tableHtml += idx === 0 ? `<th>${cellContent}</th>` : `<td>${cellContent}</td>`;
+                });
+                tableHtml += '</tr>';
+            });
+            tableHtml += '</table>';
+            return tableHtml;
+        }
+        if (mode === 'verdict' && text.includes('VS')) {
+            const parts = html.split('VS');
+            return `
+                <div class="verdict-container">
+                    <div class="verdict-box verdict-old">
+                        <div class="verdict-label" style="color:#ff4d4d">The Risk</div>
+                        <div style="font-size:0.95em">${parts[0].trim()}</div>
+                    </div>
+                    <div class="verdict-box verdict-new">
+                        <div class="verdict-label" style="color:#22c55e">KalpaKuber</div>
+                        <div style="font-size:0.95em">${parts[1].trim()}</div>
+                    </div>
+                </div>`;
+        }
+        return html;
+    }
+
+    function preset(action, id) {
+        const key = `KK_FullState_V48_${id}`;
+        const fields = ['inH1','inSub','inColor','fH','fB_Stack','fS','sH','sB','sS','inPlatform','inTheme','inTrustColor','inLineColor','inLineColor2','inBorderW','inLineW'];
+        if(action === 'save') {
+            const state = {};
+            fields.forEach(f => state[f] = document.getElementById(f)?.value);
+            state.slideTemplates = { ...slideTemplates };
+            state.slideLayouts = { ...slideLayouts };
+            localStorage.setItem(key, JSON.stringify(state));
+            alert("Preset Saved");
+            saveState();
+        } else {
+            const raw = localStorage.getItem(key);
+            if(!raw) { alert("No preset found"); return; }
+            const state = JSON.parse(raw);
+            fields.forEach(f => {
+                const el = document.getElementById(f);
+                if (el) el.value = state[f];
+            });
+            if(state.slideTemplates) {
+                slideTemplates = { ...state.slideTemplates };
+                Object.keys(slideTemplates).forEach(i => {
+                    const sel = document.getElementById(`template${i}`);
+                    if (sel) sel.value = slideTemplates[i];
+                });
+            }
+            if(state.slideLayouts) {
+                slideLayouts = { ...state.slideLayouts };
+                Object.keys(slideLayouts).forEach(i => {
+                    const sel = document.getElementById(`layout${i}`);
+                    if (sel) sel.value = slideLayouts[i];
+                });
+            }
+            applyPlatform();
+            debounceRender();
+            saveState();
+        }
+    }
+
+    function hexToRgba(hex, opacity) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    }
+
+    function debounceRender() {
+        clearTimeout(renderTimeout);
+        renderTimeout = setTimeout(() => {
+            render();
+            saveState();
+        }, 120);
+    }
+
+    // ───────────────────────────────────────────────
+    // NEW: Comparison Mode logic
+    // ───────────────────────────────────────────────
+
+    function toggleComparison() {
+        const enabled = document.getElementById('compareEnabled').checked;
+        document.getElementById('compareControls').style.display = enabled ? 'block' : 'none';
+        document.getElementById('comparisonView').style.display = enabled ? 'block' : 'none';
+        if (enabled) renderComparison();
+    }
+
+    function updateSplit(value) {
+        const handle = document.querySelector('.slider-handle');
+        if (handle) {
+            handle.style.left = value + '%';
+        }
+    }
+
+    function renderComparison() {
+        const container = document.getElementById('compareContainer');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        const slideA = document.getElementById('compareA').value;
+        const slideB = document.getElementById('compareB').value;
+
+        const cardA = document.getElementById(`card-${slideA}`);
+        const cardB = document.getElementById(`card-${slideB}`);
+
+        if (!cardA || !cardB) return;
+
+        const wrapA = document.createElement('div');
+        wrapA.className = 'comparison-card-wrapper';
+        wrapA.innerHTML = '<div class="comparison-label">A (Before)</div>';
+        wrapA.appendChild(cardA.cloneNode(true));
+
+        const wrapB = document.createElement('div');
+        wrapB.className = 'comparison-card-wrapper';
+        wrapB.style.position = 'relative';
+        wrapB.innerHTML = '<div class="comparison-label">B (After)</div>';
+        const cloneB = cardB.cloneNode(true);
+        wrapB.appendChild(cloneB);
+
+        container.appendChild(wrapA);
+        container.appendChild(wrapB);
+
+        // Add overlay slider effect
+        const sliderHtml = `
+            <div class="before-after-container">
+                <div class="before-after-slider">
+                    <div class="slider-handle" style="left:50%;"></div>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', sliderHtml);
+
+        // Make handle draggable
+        const handle = container.querySelector('.slider-handle');
+        let isDragging = false;
+
+        handle.addEventListener('mousedown', () => { isDragging = true; });
+        document.addEventListener('mouseup', () => { isDragging = false; });
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+            handle.style.left = percent + '%';
+            document.getElementById('splitPos').value = percent;
+        });
+    }
+
+    // ───────────────────────────────────────────────
+    // NEW: Smart Defaults
+    // ───────────────────────────────────────────────
+
+    function applySmartDefaults(i) {
+        const mode = document.getElementById(`m${i}`)?.value || 'text';
+        const template = slideTemplates[i] || '';
+        const body = document.getElementById(`b${i}`)?.value || '';
+
+        // 1. Table or pipe-separated content → slightly larger body text
+        if (mode === 'table' || body.includes('|')) {
+            const current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--b-size')) || 2;
+            document.documentElement.style.setProperty('--b-size', (current * 1.1) + 'rem');
+        }
+
+        // 2. Verdict mode → suggest center alignment (apply to CTA box for visibility)
+        if (mode === 'verdict') {
+            const ctaBox = document.querySelector(`#card-${i} .cta-box`);
+            if (ctaBox) {
+                ctaBox.style.textAlign = 'center';
+                ctaBox.style.borderLeft = 'none';
+                ctaBox.style.borderRight = 'none';
+                ctaBox.style.borderTop = '4px solid var(--line-color)';
+            }
+        }
+
+        // 3. Big number template → make headline bolder + bigger
+        if (template === 'template-big-number') {
+            const headline = document.querySelector(`#card-${i} .h-main`);
+            if (headline) {
+                headline.style.fontWeight = '900';
+                headline.style.textShadow = '0 0 12px rgba(197,160,89,0.5)';
+            }
+        }
+    }
+
+    function render() {
+        try {
+            const stage = document.getElementById('stage');
+            const phone = document.getElementById('phone-slider');
+            const root = document.documentElement;
+            const platform = document.getElementById('inPlatform').value;
+            const bgOpacity = document.getElementById('bgOpacityInput').value;
+            const trustBadgeStatus = document.getElementById('inTrust').value;
+            const logoPos = document.getElementById('inLogoPos').value;
+            const logoScale = document.getElementById('inLogoScale').value;
+            const headingTopSpacing = document.getElementById('inHeadingTopSpacing').value;
+            const headingBottomSpacing = document.getElementById('inHeadingBottomSpacing').value;
+            const isWide = platform === 'twitter';
+            const sepMode = document.getElementById('inSepMode').value;
+            root.style.setProperty('--sep-color-1', document.getElementById('inSepColor1').value);
+            root.style.setProperty('--sep-color-2', document.getElementById('inSepColor2').value);
+            root.style.setProperty('--sep-thickness', document.getElementById('inSepThick').value + 'px');
+            root.style.setProperty('--sep-width', document.getElementById('inSepWidth').value + '%');
+            root.style.setProperty('--sep-margin', '15px');
+            root.style.setProperty('--side-line-color', document.getElementById('inSideLineColor').value);
+            root.style.setProperty('--side-line-width', document.getElementById('inSideLineWidth').value + 'px');
+            root.style.setProperty('--horiz-line-color', document.getElementById('inHorizLineColor').value);
+            root.style.setProperty('--horiz-line-height', document.getElementById('inHorizLineHeight').value + 'px');
+            root.style.setProperty('--corner-color', document.getElementById('inCornerColor').value);
+            root.style.setProperty('--corner-weight', document.getElementById('inCornerWeight').value + 'px');
+            root.style.setProperty('--logo-scale', logoScale);
+            root.style.setProperty('--h-top-margin', headingTopSpacing + 'px');
+            root.style.setProperty('--h-bottom-margin', headingBottomSpacing + 'px');
+            const bgOpac = document.getElementById('inBgOpac').value;
+            const waterOpac = document.getElementById('inWaterOpac').value;
+            root.style.setProperty('--watermark-opacity', waterOpac);
+            const gapHS = document.getElementById('inGapHS').value;
+            const gapSB = document.getElementById('inGapSB').value;
+            root.style.setProperty('--gap-h-s', gapHS + 'px');
+            root.style.setProperty('--gap-s-b', gapSB + 'px');
+            root.style.setProperty('--h-font', document.getElementById('fH').value);
+            root.style.setProperty('--h-color', document.getElementById('cH').value);
+            root.style.setProperty('--h-size', document.getElementById('sH').value + 'rem');
+            root.style.setProperty('--s-font', document.getElementById('fS').value);
+            root.style.setProperty('--s-color', document.getElementById('cS').value);
+            root.style.setProperty('--s-size', document.getElementById('sS').value + 'rem');
+            root.style.setProperty('--b-font', document.getElementById('fB_Stack').value);
+            root.style.setProperty('--b-color', document.getElementById('cB').value);
+           
+            let bodySize = parseFloat(document.getElementById('sB').value);
+            if(platform === 'whatsapp') bodySize *= 0.9;
+            root.style.setProperty('--b-size', bodySize + 'rem');
+            root.style.setProperty('--b-lh', document.getElementById('lhB').value);
+           
+            const ctaBgHex = document.getElementById('inCtaBg').value;
+            const ctaOpacity = document.getElementById('inCtaOpac').value;
+            const ctaBlur = document.getElementById('inCtaBlur').value;
+            root.style.setProperty('--cta-bg', hexToRgba(ctaBgHex, ctaOpacity));
+            root.style.setProperty('--cta-blur', `blur(${ctaBlur}px)`);
+           
+            root.style.setProperty('--cta-txt', document.getElementById('inCtaTxt').value);
+            root.style.setProperty('--cta-size', document.getElementById('sCTA').value + 'rem');
+            root.style.setProperty('--brand-color', document.getElementById('cBrand').value);
+            root.style.setProperty('--brand-size', document.getElementById('sBrand').value + 'rem');
+            root.style.setProperty('--line-color', document.getElementById('inLineColor').value);
+            root.style.setProperty('--line-color-2', document.getElementById('inLineColor2').value);
+            root.style.setProperty('--trust-color', document.getElementById('inTrustColor').value);
+            root.style.setProperty('--text-align', document.getElementById('inAlign').value);
+            root.style.setProperty('--border-width-main', document.getElementById('inBorderW').value + 'px');
+            root.style.setProperty('--line-weight', document.getElementById('inLineW').value + 'px');
+            const currentScale = platform === 'twitter' ? 0.3 : 0.33;
+            const globalH1 = document.getElementById('inH1').value;
+            const globalSub = document.getElementById('inSub').value;
+            const globalCtaTxt = document.getElementById('ctaVal').value;
+            const brandTxt = document.getElementById('brandVal').value;
+            const bgColorHex = document.getElementById('inColor').value;
+            const bgColorFinal = hexToRgba(bgColorHex, bgOpac);
+            const themeClass = document.getElementById('inTheme').value;
+            const align = document.getElementById('inAlign').value;
+            const dividerClass = sepMode === 'dual' ? 'kk-dual-sep' : 'divider';
+            const d1 = document.getElementById('line1').checked ? `<div class="${dividerClass}"></div>` : '';
+            const d2 = document.getElementById('line2').checked ? `<div class="${dividerClass}"></div>` : '';
+            const d3 = document.getElementById('line3').checked ? `<div class="${dividerClass}"></div>` : '';
+            const d4 = document.getElementById('line4').checked ? `<div class="${dividerClass}"></div>` : '';
+            stage.innerHTML = '';
+            phone.innerHTML = '';
+            for(let i=1; i<=5; i++) {
+                const insightText = document.getElementById(`b${i}`).value;
+                const insightMode = document.getElementById(`m${i}`).value;
+                const hOvr = document.getElementById(`hOvr${i}`).value;
+                const sOvr = document.getElementById(`sOvr${i}`).value;
+                const wOvr = document.getElementById(`wOvr${i}`).value;
+                const ctaOvr = document.getElementById(`ctaOvr${i}`).value || globalCtaTxt;
+               
+                const slideTemplate = slideTemplates[i] || "";
+                const templateConfig = templateConfigs[slideTemplate] || templateConfigs[""];
+                const templateClass = templateConfig.class;
+                const showSubhead = templateConfig.showSub;
+                const layoutMode = slideLayouts[i] || "standard";
+               
+                const dData = checkDensity(insightText);
+                const dTag = document.getElementById(`dens${i}`);
+                if(dTag) {
+                    dTag.innerText = dData.l;
+                    dTag.className = 'density-tag ' + dData.c;
+                }
+                const autoSize = insightText.length > 250 ? bodySize * 0.8 : bodySize;
+                const slideImg = slideImages[i];
+               
+                const wrap = document.createElement('div');
+                wrap.className = 'card-wrap';
+                wrap.style.position = 'relative';
+                const logoContent = userLogo
+                    ? `<img src="${userLogo}" style="max-height:80px;">`
+                    : `<div style="font-family:serif; font-weight:bold; color:var(--line-color); font-size:1.5rem;">KALPAKUBER</div>`;
+                const floatingLogoHtml = `<div class="logo-container pos-${logoPos}">${logoContent}</div>`;
+               
+                let processedBody = `<div class="body-p" style="font-size: ${autoSize}rem">${process(insightText, insightMode)}</div>`;
+               
+                let contentLayout = processedBody;
+                if(layoutMode === 'bridge' && insightMode !== 'verdict') {
+                    contentLayout = `<div class="bridge-container">
+                            <div class="bridge-text">${processedBody}</div>
+                            <div class="bridge-visual">
+                                ${slideImg ? `<img src="${slideImg}">` : '<span style="color:var(--line-color); opacity:0.3; font-size:0.8rem">CHART / IMAGE</span>'}
+                            </div>
+                        </div>`;
+                }
+
+                // ──────────────────────────────
+                // NEW: Apply smart defaults per slide
+                // ──────────────────────────────
+                applySmartDefaults(i);
+
+                const slideHtml = `
+                    <div class="export-card ${themeClass} ${templateClass}" id="card-${i}" style="background-color: ${bgColorFinal}">
+                        <div class="rail rail-v r-left"></div>
+                        <div class="rail rail-v r-right"></div>
+                        <div class="rail rail-h r-top"></div>
+                        <div class="rail rail-h r-bottom"></div>
+                        <div class="corner-decor c-tl"></div>
+                        <div class="corner-decor c-tr"></div>
+                        <div class="corner-decor c-bl"></div>
+                        <div class="corner-decor c-br"></div>
+                        <div class="safe-zone-overlay"></div>
+                        <div class="watermark-overlay">${wOvr}</div>
+                        ${floatingLogoHtml}
+                        ${globalBgImg ? `<div class="card-bg-overlay" style="opacity: ${bgOpacity}"><img src="${globalBgImg}"></div>` : ''}
+                        <div class="top-section"></div>
+                        <div class="middle-content-area">
+                            <div class="head-stack">
+                                ${!isWide ? d1 : ''}
+                                <h1 class="h-main">${process(hOvr || globalH1, 'text')}</h1>
+                                ${!isWide ? d2 : ''}
+                                ${showSubhead ? `<div class="h-context">${process(sOvr || globalSub, 'text')}</div>` : ''}
+                                ${!isWide && showSubhead ? d3 : ''}
+                            </div>
+                            ${contentLayout}
+                        </div>
+                        <div class="bottom-wrap">
+                            ${d4}
+                            <div class="cta-box" style="${align === 'center' ? 'border-left:none; border-bottom:4px solid var(--line-color); text-align:center' : align === 'right' ? 'border-left:none; border-right:5px solid var(--line-color); text-align:right' : ''}">
+                                <div class="cta-text">${process(ctaOvr, 'text')}</div>
+                            </div>
+                            <div class="branding">${brandTxt}</div>
+                            ${trustBadgeStatus === 'show' ? `<div class="trust-badge" style="text-align:${align}">ARN 314916 | AMFI Registered Mutual Fund Distributor & INSURANCE AGENT CODE: 0275563G </div>` : ''}
+                        </div>
+                    </div>`;
+                wrap.innerHTML = `<button class="dl-btn" onclick="exportCard('card-${i}')">Download PNG ${i}</button>${slideHtml}`;
+                stage.appendChild(wrap);
+               
+                const pWrap = document.createElement('div');
+                pWrap.className = 'phone-slide';
+                pWrap.style.transform = `scale(${currentScale})`;
+                pWrap.innerHTML = slideHtml;
+                phone.appendChild(pWrap);
+            }
+
+            // After all cards are rendered → update comparison if enabled
+            if (document.getElementById('compareEnabled').checked) {
+                setTimeout(renderComparison, 100);
+            }
+
+        } catch(e) {
+            console.error('Render error:', e);
+            alert('Render failed: ' + e.message);
+        }
+    }
+
+    async function exportCard(id) {
+        try {
+            const el = document.getElementById(id);
+            if(!el) throw new Error('Card element not found');
+            // Give layout time to settle
+            await new Promise(r => setTimeout(r, 400));
+            const canvas = await html2canvas(el, {
+                scale: 3,
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: el.scrollWidth,
+                windowHeight: el.scrollHeight,
+                backgroundColor: null,
+                onclone: (clonedDoc) => {
+                    // Copy all CSS variables from root
+                    const originalRoot = document.documentElement;
+                    const clonedRoot = clonedDoc.documentElement;
+                    const style = window.getComputedStyle(originalRoot);
+                    for (let i = 0; i < style.length; i++) {
+                        const name = style[i];
+                        if (name.startsWith('--')) {
+                            const value = style.getPropertyValue(name);
+                            clonedRoot.style.setProperty(name, value);
+                        }
+                    }
+                    // Also force background on the card itself
+                    const clonedCard = clonedDoc.getElementById(id);
+                    if (clonedCard) {
+                        clonedCard.style.backgroundColor = window.getComputedStyle(el).backgroundColor;
+                    }
+                }
+            });
+           
+            const link = document.createElement('a');
+            link.download = `KalpaKuber-${id.replace('card-','slide-')}.png`;
+            link.href = canvas.toDataURL("image/png", 1.0);
+            link.click();
+        } catch (err) {
+            console.error('Export error:', err);
+            alert("Export failed: " + err.message);
+        }
+    }
+
+    async function exportAllPDF() {
+        try {
+            const { jsPDF } = window.jspdf;
+            if(!jsPDF) throw new Error('jsPDF library not loaded');
+            const pdf = new jsPDF('p', 'pt', [1080, 1350]);
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "PREPARING PDF...";
+           
+            await new Promise(r => setTimeout(r, 500));
+           
+            for (let i = 1; i <= 5; i++) {
+                const el = document.getElementById(`card-${i}`);
+                const canvas = await html2canvas(el, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false
+                });
+                const imgData = canvas.toDataURL('image/jpeg', 0.92);
+                if (i > 1) pdf.addPage([1080, 1350], 'p');
+                pdf.addImage(imgData, 'JPEG', 0, 0, 1080, 1350);
+            }
+            pdf.save("KalpaKuber_Deck.pdf");
+            btn.innerText = originalText;
+        } catch(e) {
+            console.error('PDF export error:', e);
+            alert('PDF export failed: ' + e.message);
+        }
+    }
+
+    async function exportAll() {
+        try {
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "EXPORTING...";
+           
+            for(let i=1; i<=5; i++) {
+                btn.innerText = `EXPORTING ${i}/5...`;
+                await exportCard(`card-${i}`);
+                await new Promise(r => setTimeout(r, 3000));
+            }
+           
+            btn.innerText = originalText;
+        } catch(e) {
+            console.error('Batch export error:', e);
+            alert('Batch export failed: ' + e.message);
+        }
+    }
+   
+    createSlideInputs();
+    render();
+    saveState(); // initial state saved
+
+    let previewIdx = 0;
+    setInterval(() => {
+        const slider = document.getElementById('phone-slider');
+        if(slider) {
+            previewIdx = (previewIdx + 1) % 5;
+            slider.style.transform = `translateX(-${previewIdx * 20}%)`;
+        }
+    }, 3800);
+</script>
+</body>
+</html>
