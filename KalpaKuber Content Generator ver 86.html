@@ -905,6 +905,46 @@
                    
                     <label>CTA Override</label>
                     <textarea id="ctaOvr${i}" placeholder="Global CTA used if empty" oninput="debounceRender()"></textarea>
+
+                    <label>Alignment Controls (Granular)</label>
+                    <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                        <div>
+                            <label>Heading Align</label>
+                            <select id="hAlign${i}" onchange="debounceRender()">
+                                <option value="global" selected>Global</option>
+                                <option value="left">Left</option>
+                                <option value="center">Center</option>
+                                <option value="right">Right</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Subhead Align</label>
+                            <select id="sAlign${i}" onchange="debounceRender()">
+                                <option value="global" selected>Global</option>
+                                <option value="left">Left</option>
+                                <option value="center">Center</option>
+                                <option value="right">Right</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Body Align</label>
+                            <select id="bAlign${i}" onchange="debounceRender()">
+                                <option value="global" selected>Global</option>
+                                <option value="left">Left</option>
+                                <option value="center">Center</option>
+                                <option value="right">Right</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>CTA Align</label>
+                            <select id="ctaAlign${i}" onchange="debounceRender()">
+                                <option value="global" selected>Global</option>
+                                <option value="left">Left</option>
+                                <option value="center">Center</option>
+                                <option value="right">Right</option>
+                            </select>
+                        </div>
+                    </div>
                    
                     <label>Mode <span id="dens${i}" class="density-tag"></span></label>
                     <select id="m${i}" onchange="debounceRender()">
@@ -931,6 +971,10 @@
         document.getElementById(`hOvr${n}`).value = "";
         document.getElementById(`sOvr${n}`).value = "";
         document.getElementById(`ctaOvr${n}`).value = "";
+        document.getElementById(`hAlign${n}`).value = "global";
+        document.getElementById(`sAlign${n}`).value = "global";
+        document.getElementById(`bAlign${n}`).value = "global";
+        document.getElementById(`ctaAlign${n}`).value = "global";
         document.getElementById(`m${n}`).value = "text";
         document.getElementById(`b${n}`).value = initialSlideContent[n-1] || "";
         slideTemplates[n] = "";
@@ -1338,6 +1382,11 @@
         }
     }
 
+    function resolveAlignValue(value, fallback) {
+        if (!value || value === 'global') return fallback;
+        return value;
+    }
+
     function render() {
         try {
             const stage = document.getElementById('stage');
@@ -1400,7 +1449,8 @@
             root.style.setProperty('--line-color', document.getElementById('inLineColor').value);
             root.style.setProperty('--line-color-2', document.getElementById('inLineColor2').value);
             root.style.setProperty('--trust-color', document.getElementById('inTrustColor').value);
-            root.style.setProperty('--text-align', document.getElementById('inAlign').value);
+            const globalAlign = document.getElementById('inAlign').value;
+            root.style.setProperty('--text-align', globalAlign);
             root.style.setProperty('--border-width-main', document.getElementById('inBorderW').value + 'px');
             root.style.setProperty('--line-weight', document.getElementById('inLineW').value + 'px');
             const currentScale = platform === 'twitter' ? 0.3 : 0.33;
@@ -1450,7 +1500,12 @@
                     : `<div style="font-family:serif; font-weight:bold; color:var(--line-color); font-size:1.5rem;">KALPAKUBER</div>`;
                 const floatingLogoHtml = `<div class="logo-container pos-${logoPos}">${logoContent}</div>`;
                
-                let processedBody = `<div class="body-p" style="font-size: ${autoSize}rem">${process(insightText, insightMode)}</div>`;
+                const headingAlign = resolveAlignValue(document.getElementById(`hAlign${i}`)?.value, globalAlign);
+                const subAlign = resolveAlignValue(document.getElementById(`sAlign${i}`)?.value, globalAlign);
+                const bodyAlign = resolveAlignValue(document.getElementById(`bAlign${i}`)?.value, globalAlign);
+                const ctaAlign = resolveAlignValue(document.getElementById(`ctaAlign${i}`)?.value, globalAlign);
+
+                let processedBody = `<div class="body-p" style="font-size: ${autoSize}rem; text-align: ${bodyAlign};">${process(insightText, insightMode)}</div>`;
                
                 let contentLayout = processedBody;
                 if(layoutMode === 'bridge' && insightMode !== 'verdict') {
@@ -1485,16 +1540,16 @@
                         <div class="middle-content-area">
                             <div class="head-stack">
                                 ${!isWide ? d1 : ''}
-                                <h1 class="h-main">${process(hOvr || globalH1, 'text')}</h1>
+                                <h1 class="h-main" style="text-align: ${headingAlign};">${process(hOvr || globalH1, 'text')}</h1>
                                 ${!isWide ? d2 : ''}
-                                ${showSubhead ? `<div class="h-context">${process(sOvr || globalSub, 'text')}</div>` : ''}
+                                ${showSubhead ? `<div class="h-context" style="text-align: ${subAlign};">${process(sOvr || globalSub, 'text')}</div>` : ''}
                                 ${!isWide && showSubhead ? d3 : ''}
                             </div>
                             ${contentLayout}
                         </div>
                         <div class="bottom-wrap">
                             ${d4}
-                            <div class="cta-box" style="${align === 'center' ? 'border-left:none; border-bottom:4px solid var(--line-color); text-align:center' : align === 'right' ? 'border-left:none; border-right:5px solid var(--line-color); text-align:right' : ''}">
+                            <div class="cta-box" style="${ctaAlign === 'center' ? 'border-left:none; border-bottom:4px solid var(--line-color); text-align:center' : ctaAlign === 'right' ? 'border-left:none; border-right:5px solid var(--line-color); text-align:right' : ''}text-align:${ctaAlign};">
                                 <div class="cta-text">${process(ctaOvr, 'text')}</div>
                             </div>
                             <div class="branding">${brandTxt}</div>
