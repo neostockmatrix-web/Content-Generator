@@ -126,6 +126,27 @@
         .input-group label { font-size: 0.6rem; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 5px; }
         textarea, input, select { width: 100%; background: #111; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; font-size: 0.75rem; }
         .control-sep { grid-column: 1 / -1; border-top: 1px solid #333; margin: 10px 0; padding-top: 10px; color: var(--gold); font-size: 0.7rem; font-weight: 900; letter-spacing: 2px; }
+        .export-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+            display: none; align-items: center; justify-content: center; z-index: 3000;
+        }
+        .export-modal.active { display: flex; }
+        .export-modal .modal-content {
+            background: #0b0b0b; border: 1px solid #333; border-radius: 12px; padding: 24px; width: 340px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6); text-align: center;
+        }
+        .export-modal .modal-title { font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+        .export-modal .modal-status { font-size: 0.9rem; color: #fff; margin-bottom: 14px; }
+        .export-modal .modal-progress {
+            width: 100%; height: 8px; border-radius: 999px; background: #1a1a1a; overflow: hidden; margin-bottom: 18px;
+        }
+        .export-modal .modal-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--line-color), var(--line-color-2)); transition: width 0.2s ease; }
+        .export-modal .modal-actions { display: flex; gap: 10px; justify-content: center; }
+        .export-modal .modal-btn { background: #2563eb; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
+        .export-modal .modal-btn.cancel { background: #dc2626; }
+        body.export-only-active .controls-container,
+        body.export-only-active .ui-toggle { display: none !important; }
+        body.export-only-active .safe-zone-overlay { display: none !important; }
         .safe-zone-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             border: 80px solid rgba(255, 0, 0, 0.15); pointer-events: none; z-index: 999; display: none;
@@ -452,6 +473,21 @@
             </select>
         </div>
         <button class="p-btn" style="background:#2563eb; color:white; grid-column: span 1;" onclick="exportAllPDF(this)">Download Full Deck (PDF)</button>
+        <div class="input-group">
+            <label>Export Quality (Scale)</label>
+            <select id="exportQuality" onchange="saveState()">
+                <option value="2">Standard (2x)</option>
+                <option value="3" selected>High (3x)</option>
+                <option value="4">Ultra (4x)</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Export-Only Mode</label>
+            <select id="exportOnlyMode" onchange="toggleExportOnlyMode()">
+                <option value="off" selected>Off</option>
+                <option value="on">On (Hide UI Overlays)</option>
+            </select>
+        </div>
         <button class="p-btn" style="background:#c5a059; color:black; grid-column: span 1;" onclick="harmonizeColors()">Harmonize Colors</button>
         <div class="control-sep">🚀 MODULAR LAYOUT & SAFE ZONES</div>
         <div class="input-group">
@@ -684,7 +720,17 @@
 
 <div class="preview-phone"><div id="phone-slider"></div></div>
 
-<script>
+    <div class="export-modal" id="exportModal" aria-live="polite" aria-atomic="true">
+        <div class="modal-content">
+            <div class="modal-title">Export in Progress</div>
+            <div class="modal-status" id="exportStatus">Preparing...</div>
+            <div class="modal-progress"><div class="modal-bar" id="exportProgressBar"></div></div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="cancelExport()">Cancel Export</button>
+            </div>
+        </div>
+    </div>
+    <script>
     const masterFonts = [
         {name: 'Heritage Serif (Georgia)', val: "'Georgia', serif"},
         {name: 'Classical Serif (Palatino)', val: "'Palatino Linotype', 'Book Antiqua', serif"},
@@ -767,6 +813,7 @@
             if (sel) sel.value = slideLayouts[i];
         });
         render();
+        toggleExportOnlyMode();
     }
 
     document.addEventListener('keydown', e => {
@@ -1504,14 +1551,27 @@
         await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     }
 
+    async function forceRedraw(element) {
+        if (!element) return;
+        const prevTransform = element.style.transform;
+        element.style.transform = `${prevTransform ? prevTransform + ' ' : ''}translateZ(0)`;
+        void element.offsetHeight;
+        await waitForNextFrame();
+        element.style.transform = prevTransform;
+        void element.offsetHeight;
+    }
+
     async function prepareForCapture(el) {
         await waitForFonts();
         await waitForImages(el);
+        await forceRedraw(el);
         await waitForNextFrame();
     }
 
     let previewTimer = null;
     let isExporting = false;
+    let cancelExportRequested = false;
+    let exportModeWasActive = false;
 
     function pausePreview() {
         if (previewTimer) {
@@ -1532,53 +1592,111 @@
         }
     }
 
-    async function startExport() {
+    function getExportScale() {
+        const select = document.getElementById('exportQuality');
+        const raw = select ? Number(select.value) : 3;
+        return Number.isFinite(raw) ? raw : 3;
+    }
+
+    function setExportOnlyActive(active) {
+        document.body.classList.toggle('export-only-active', active);
+    }
+
+    function toggleExportOnlyMode() {
+        const select = document.getElementById('exportOnlyMode');
+        const isOn = select && select.value === 'on';
+        setExportOnlyActive(isOn);
+        saveState();
+    }
+
+    function showExportModal() {
+        const modal = document.getElementById('exportModal');
+        if (modal) modal.classList.add('active');
+    }
+
+    function hideExportModal() {
+        const modal = document.getElementById('exportModal');
+        if (modal) modal.classList.remove('active');
+    }
+
+    function updateExportModal(step, total, label) {
+        const status = document.getElementById('exportStatus');
+        const bar = document.getElementById('exportProgressBar');
+        if (status) status.innerText = label || `Exporting ${step} of ${total}...`;
+        if (bar) {
+            const pct = total > 0 ? Math.min(100, Math.round((step / total) * 100)) : 0;
+            bar.style.width = `${pct}%`;
+        }
+    }
+
+    function cancelExport() {
+        cancelExportRequested = true;
+        updateExportModal(0, 1, 'Cancelling export...');
+    }
+
+    async function startExport(totalSlides = 1, label = 'Preparing export...') {
         if (isExporting) return false;
         isExporting = true;
+        cancelExportRequested = false;
+        exportModeWasActive = document.body.classList.contains('export-only-active');
+        const exportOnly = document.getElementById('exportOnlyMode');
+        const exportOnlyOn = exportOnly && exportOnly.value === 'on';
+        if (exportOnlyOn) setExportOnlyActive(true);
         pausePreview();
+        showExportModal();
+        updateExportModal(0, totalSlides, label);
         return true;
     }
 
     function finishExport() {
         isExporting = false;
+        cancelExportRequested = false;
+        if (!exportModeWasActive) setExportOnlyActive(false);
         resumePreview();
+        hideExportModal();
+    }
+
+    async function captureCard(el, scaleValue) {
+        await prepareForCapture(el);
+        return html2canvas(el, {
+            scale: scaleValue,
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: el.scrollWidth,
+            windowHeight: el.scrollHeight,
+            backgroundColor: null,
+            onclone: (clonedDoc) => {
+                // Copy all CSS variables from root
+                const originalRoot = document.documentElement;
+                const clonedRoot = clonedDoc.documentElement;
+                const style = window.getComputedStyle(originalRoot);
+                for (let i = 0; i < style.length; i++) {
+                    const name = style[i];
+                    if (name.startsWith('--')) {
+                        const value = style.getPropertyValue(name);
+                        clonedRoot.style.setProperty(name, value);
+                    }
+                }
+                // Also force background on the card itself
+                const clonedCard = clonedDoc.getElementById(el.id);
+                if (clonedCard) {
+                    clonedCard.style.backgroundColor = window.getComputedStyle(el).backgroundColor;
+                }
+            }
+        });
     }
 
     async function exportCard(id) {
         try {
-            if (!(await startExport())) return;
+            if (!(await startExport(1, 'Preparing PNG export...'))) return;
             const el = document.getElementById(id);
             if(!el) throw new Error('Card element not found');
-            await prepareForCapture(el);
-            const canvas = await html2canvas(el, {
-                scale: 3,
-                useCORS: true,
-                allowTaint: true,
-                logging: false,
-                scrollX: 0,
-                scrollY: 0,
-                windowWidth: el.scrollWidth,
-                windowHeight: el.scrollHeight,
-                backgroundColor: null,
-                onclone: (clonedDoc) => {
-                    // Copy all CSS variables from root
-                    const originalRoot = document.documentElement;
-                    const clonedRoot = clonedDoc.documentElement;
-                    const style = window.getComputedStyle(originalRoot);
-                    for (let i = 0; i < style.length; i++) {
-                        const name = style[i];
-                        if (name.startsWith('--')) {
-                            const value = style.getPropertyValue(name);
-                            clonedRoot.style.setProperty(name, value);
-                        }
-                    }
-                    // Also force background on the card itself
-                    const clonedCard = clonedDoc.getElementById(id);
-                    if (clonedCard) {
-                        clonedCard.style.backgroundColor = window.getComputedStyle(el).backgroundColor;
-                    }
-                }
-            });
+            const scaleValue = getExportScale();
+            updateExportModal(1, 1, 'Rendering PNG...');
+            const canvas = await captureCard(el, scaleValue);
            
             const link = document.createElement('a');
             link.download = `KalpaKuber-${id.replace('card-','slide-')}.png`;
@@ -1586,7 +1704,11 @@
             link.click();
         } catch (err) {
             console.error('Export error:', err);
-            alert("Export failed: " + err.message);
+            if (err && err.message === 'Export canceled by user') {
+                updateExportModal(0, 1, 'Export canceled.');
+            } else {
+                alert("Export failed: " + err.message);
+            }
         } finally {
             finishExport();
         }
@@ -1594,7 +1716,8 @@
 
     async function exportAllPDF(btn) {
         try {
-            if (!(await startExport())) return;
+            const totalSlides = 5;
+            if (!(await startExport(totalSlides, 'Preparing PDF export...'))) return;
             const { jsPDF } = window.jspdf;
             if(!jsPDF) throw new Error('jsPDF library not loaded');
             const pdf = new jsPDF('p', 'pt', [1080, 1350]);
@@ -1604,16 +1727,13 @@
            
             await waitForNextFrame();
            
-            for (let i = 1; i <= 5; i++) {
+            const scaleValue = getExportScale();
+            for (let i = 1; i <= totalSlides; i++) {
+                if (cancelExportRequested) throw new Error('Export canceled by user');
                 const el = document.getElementById(`card-${i}`);
                 if (!el) continue;
-                await prepareForCapture(el);
-                const canvas = await html2canvas(el, {
-                    scale: 2,
-                    useCORS: true,
-                    allowTaint: true,
-                    logging: false
-                });
+                updateExportModal(i, totalSlides, `Rendering PDF ${i}/${totalSlides}...`);
+                const canvas = await captureCard(el, scaleValue);
                 const imgData = canvas.toDataURL('image/jpeg', 0.92);
                 if (i > 1) pdf.addPage([1080, 1350], 'p');
                 pdf.addImage(imgData, 'JPEG', 0, 0, 1080, 1350);
@@ -1622,7 +1742,11 @@
             if (buttonEl) buttonEl.innerText = originalText;
         } catch(e) {
             console.error('PDF export error:', e);
-            alert('PDF export failed: ' + e.message);
+            if (e && e.message === 'Export canceled by user') {
+                updateExportModal(0, 1, 'Export canceled.');
+            } else {
+                alert('PDF export failed: ' + e.message);
+            }
         } finally {
             finishExport();
         }
@@ -1630,21 +1754,35 @@
 
     async function exportAll(btn) {
         try {
-            if (!(await startExport())) return;
+            const totalSlides = 5;
+            if (!(await startExport(totalSlides, 'Preparing batch export...'))) return;
             const buttonEl = btn || document.activeElement;
             const originalText = buttonEl ? buttonEl.innerText : '';
             if (buttonEl) buttonEl.innerText = "EXPORTING...";
            
-            for(let i=1; i<=5; i++) {
-                if (buttonEl) buttonEl.innerText = `EXPORTING ${i}/5...`;
-                await exportCard(`card-${i}`);
+            const scaleValue = getExportScale();
+            for(let i=1; i<=totalSlides; i++) {
+                if (cancelExportRequested) throw new Error('Export canceled by user');
+                if (buttonEl) buttonEl.innerText = `EXPORTING ${i}/${totalSlides}...`;
+                updateExportModal(i, totalSlides, `Rendering PNG ${i}/${totalSlides}...`);
+                const el = document.getElementById(`card-${i}`);
+                if (!el) continue;
+                const canvas = await captureCard(el, scaleValue);
+                const link = document.createElement('a');
+                link.download = `KalpaKuber-slide-${i}.png`;
+                link.href = canvas.toDataURL("image/png", 1.0);
+                link.click();
                 await new Promise(r => setTimeout(r, 3000));
             }
            
             if (buttonEl) buttonEl.innerText = originalText;
         } catch(e) {
             console.error('Batch export error:', e);
-            alert('Batch export failed: ' + e.message);
+            if (e && e.message === 'Export canceled by user') {
+                updateExportModal(0, 1, 'Export canceled.');
+            } else {
+                alert('Batch export failed: ' + e.message);
+            }
         } finally {
             finishExport();
         }
@@ -1653,6 +1791,7 @@
     createSlideInputs();
     render();
     saveState(); // initial state saved
+    toggleExportOnlyMode();
 
     let previewIdx = 0;
     resumePreview();
