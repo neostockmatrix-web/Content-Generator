@@ -1480,6 +1480,9 @@
         if (images.length === 0) return;
         await Promise.all(images.map((img) => {
             if (img.complete && img.naturalWidth !== 0) return Promise.resolve();
+            if (img.decode) {
+                return img.decode().catch(() => undefined);
+            }
             return new Promise((resolve) => {
                 img.addEventListener('load', resolve, { once: true });
                 img.addEventListener('error', resolve, { once: true });
@@ -1507,8 +1510,43 @@
         await waitForNextFrame();
     }
 
+    let previewTimer = null;
+    let isExporting = false;
+
+    function pausePreview() {
+        if (previewTimer) {
+            clearInterval(previewTimer);
+            previewTimer = null;
+        }
+    }
+
+    function resumePreview() {
+        if (!previewTimer) {
+            previewTimer = setInterval(() => {
+                const slider = document.getElementById('phone-slider');
+                if(slider) {
+                    previewIdx = (previewIdx + 1) % 5;
+                    slider.style.transform = `translateX(-${previewIdx * 20}%)`;
+                }
+            }, 3800);
+        }
+    }
+
+    async function startExport() {
+        if (isExporting) return false;
+        isExporting = true;
+        pausePreview();
+        return true;
+    }
+
+    function finishExport() {
+        isExporting = false;
+        resumePreview();
+    }
+
     async function exportCard(id) {
         try {
+            if (!(await startExport())) return;
             const el = document.getElementById(id);
             if(!el) throw new Error('Card element not found');
             await prepareForCapture(el);
@@ -1549,11 +1587,14 @@
         } catch (err) {
             console.error('Export error:', err);
             alert("Export failed: " + err.message);
+        } finally {
+            finishExport();
         }
     }
 
     async function exportAllPDF(btn) {
         try {
+            if (!(await startExport())) return;
             const { jsPDF } = window.jspdf;
             if(!jsPDF) throw new Error('jsPDF library not loaded');
             const pdf = new jsPDF('p', 'pt', [1080, 1350]);
@@ -1582,11 +1623,14 @@
         } catch(e) {
             console.error('PDF export error:', e);
             alert('PDF export failed: ' + e.message);
+        } finally {
+            finishExport();
         }
     }
 
     async function exportAll(btn) {
         try {
+            if (!(await startExport())) return;
             const buttonEl = btn || document.activeElement;
             const originalText = buttonEl ? buttonEl.innerText : '';
             if (buttonEl) buttonEl.innerText = "EXPORTING...";
@@ -1601,6 +1645,8 @@
         } catch(e) {
             console.error('Batch export error:', e);
             alert('Batch export failed: ' + e.message);
+        } finally {
+            finishExport();
         }
     }
    
@@ -1609,13 +1655,7 @@
     saveState(); // initial state saved
 
     let previewIdx = 0;
-    setInterval(() => {
-        const slider = document.getElementById('phone-slider');
-        if(slider) {
-            previewIdx = (previewIdx + 1) % 5;
-            slider.style.transform = `translateX(-${previewIdx * 20}%)`;
-        }
-    }, 3800);
+    resumePreview();
 </script>
 </body>
 </html>
